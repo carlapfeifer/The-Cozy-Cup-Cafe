@@ -2,14 +2,17 @@
 
 *The FCPL lab runs as **SharpQuest**, the quest to learn C#. That's why the tooling and some code say SharpQuest.*
 
-> **Edit this section in session 1.** It's your first commit.
->
-> **Theme:** _which of the catalogue themes you picked_
-> **In one sentence:** _what your app will do by January_
-> **Route:** _guided or project_
->
-> Don't write your name or your avatar here. The scoreboard is anonymous, and this file is how people would find out.
+Café POS
+The till for a small café — orders in, totals right, nothing lost.
 
+You build the point-of-sale system for The Cozy Cup: a menu, orders that add up correctly, and a sales log the owner can finally ask questions of — "what sells best before 10?", "which pastries have never been ordered?", "what did we make today?"
+
+Your items: menu items — name, category, price, size, allergens, available or not
+Where the data comes from: a menu you write yourself. Optionally, prices in euros from Frankfurter (free, no key)
+Something happens when: an item joins the menu, an order is completed, or something sells out
+Parent and children: a Category has many menu items
+What you'll look at: the menu, searchable, and an order being built
+Good for you if you'd rather build something that looks like a real job than a game — and you like getting money exactly right.
 ---
 
 ## Getting your own copy (session 1, browser only)
