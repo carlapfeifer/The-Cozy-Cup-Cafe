@@ -2,22 +2,22 @@ using SharpQuest.Contracts;
 
 namespace Capstone.Core.Models;
 
-public class MenuItem : IItem,IPriced
+public abstract class MenuItem : IItem,IPriced
 {
     public string Id { get; }
     public string DisplayName { get; }
     public Category Category { get; }
     public Money Price { get; }
-    public Size? Size { get; }            
+    //public Size? Size { get; }            
     public Allergen Allergens { get; }
     public bool IsAvailable { get; }
 
-    public MenuItem(
+    protected MenuItem(
         string id,
         string displayName,
         Category category,
         Money price,
-        Size? size = null,
+       // Size? size = null,
         Allergen allergens = Allergen.None,
         bool isAvailable = true)
     {
@@ -33,8 +33,20 @@ public class MenuItem : IItem,IPriced
         DisplayName = displayName;
         Category = category;
         Price = price;
-        Size = size;
+        //Size = size;
         Allergens = allergens;
         IsAvailable = isAvailable;
     }
+    
+    /// <summary>
+    /// every kind must describe itself
+    /// </summary>
+    /// <returns></returns>
+    public abstract string Describe();
+    
+    /// <summary>
+    /// shared part of every description
+    /// </summary>
+    /// <returns></returns>
+    protected string Card() => $"{Id} {DisplayName}";
 }

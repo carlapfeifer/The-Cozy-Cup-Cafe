@@ -8,7 +8,7 @@ public sealed class Lab03Wiring : ILab03Wiring
     public IItemStore CreateStore() => new CafeStore();
 
     public IItem CreateSample(int seed) =>
-        new MenuItem(
+        new Drink(
             $"item-{seed}",
             $"Menu Item {seed}",
             new Category("cof", "Coffee"),

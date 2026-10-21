@@ -12,10 +12,10 @@ public class CafeStoreTests
     public void Store_rejects_a_duplicate_id_and_keeps_one_item()
     {
         var store = new CafeStore();
-        store.Add(new MenuItem("c1", "Latte", Coffee, Ten));
+        store.Add(new Drink("c1", "Latte", Coffee, Ten));
 
         Assert.Throws<ArgumentException>(
-            () => store.Add(new MenuItem("c1", "Mocha", Coffee, Ten)));
+            () => store.Add(new Drink("c1", "Mocha", Coffee, Ten)));
         Assert.Equal(1, store.Count);
     }
 
@@ -23,7 +23,7 @@ public class CafeStoreTests
     public void Store_FindById_is_case_sensitive()
     {
         var store = new CafeStore();
-        store.Add(new MenuItem("c1", "Latte", Coffee, Ten));
+        store.Add(new Drink("c1", "Latte", Coffee, Ten));
 
         Assert.Null(store.FindById("C1"));
         Assert.NotNull(store.FindById("c1"));

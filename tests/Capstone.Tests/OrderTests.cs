@@ -7,7 +7,7 @@ public class OrderTests
     private static readonly Category Coffee = new("cof", "Coffee");
 
     private static MenuItem Item(string id, decimal price, string currency = "RON") =>
-        new(id, $"Item {id}", Coffee, new Money(price, currency));
+        new Drink(id, $"Item {id}", Coffee, new Money(price, currency));
 
     [Fact]
     public void Empty_order_has_a_total_of_zero()

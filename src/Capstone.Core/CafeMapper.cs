@@ -64,7 +64,7 @@ public class MenuItemMapper : IItemMapper
                 Amount = menuItem.Price.Amount,
                 Currency = menuItem.Price.Currency
             },
-            Size = menuItem.Size?.ToString(),
+            Size = menuItem is Drink drink ? drink.Size.ToString() : null,
             // Map active enum flags to a list of string names.
             Allergens = Enum.GetValues<Allergen>()
                 .Where(a => a != Allergen.None && menuItem.Allergens.HasFlag(a))
@@ -112,15 +112,14 @@ public class MenuItemMapper : IItemMapper
                     allergens |= parsed;
                 }
             }
+            var category = new Category(dto.Category.Id!, dto.Category.Name!);
+            var price = new Money(dto.Price.Amount.Value, dto.Price.Currency);
+            var available = dto.IsAvailable ?? true;
 
-            return new MenuItem(
-                dto.Id!,
-                dto.DisplayName!,
-                new Category(dto.Category.Id!, dto.Category.Name!),
-                new Money(dto.Price.Amount.Value, dto.Price.Currency),
-                size,
-                allergens,
-                dto.IsAvailable ?? true);
+            if (size is { } drinkSize)
+                return new Drink(dto.Id!, dto.DisplayName!, category, price, drinkSize, allergens, available);
+
+            return new Food(dto.Id!, dto.DisplayName!, category, price, allergens, available);
         }
         catch (JsonException)
         {
@@ -130,5 +129,8 @@ public class MenuItemMapper : IItemMapper
         {
             return null;   // Triggered by domain constructor guard clauses.
         }
-    }
+           
+        }
+       
+    
 }

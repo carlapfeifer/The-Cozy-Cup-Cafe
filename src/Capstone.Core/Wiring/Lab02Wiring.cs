@@ -13,7 +13,7 @@ public sealed class Lab02Wiring : ILab02Wiring
     public IItemMapper CreateMapper() => new MenuItemMapper();
 
     public IItem CreateSample(int seed) =>
-        new MenuItem(
+        new Drink(
             $"item-{seed}",
             $"Menu Item {seed}",
             new Category("cof", "Coffee"),
