@@ -73,6 +73,7 @@ public sealed class Lab04Wiring : ILab04Wiring
         null => throw new ArgumentNullException(nameof(item)),
         Drink => "drink",
         Food => "food",
+        Combo => "combo",
         _ => "something else",
     };
 
