@@ -11,13 +11,26 @@ public sealed class Combo : MenuItem
         Money price,
         IEnumerable<MenuItem> parts,
         bool isAvailable = true)
-        : base(id, displayName, category, price, CombineAllergens(parts), isAvailable)
+        : this(id, displayName, category, price, CheckedParts(parts), isAvailable)
     {
-        Parts = parts.ToList();
     }
 
-    // The combo contains every allergen of its parts.
-    private static Allergen CombineAllergens(IEnumerable<MenuItem> parts)
+    // The combo contains every allergen of its parts, and is only available when all of them are.
+    private Combo(
+        string id,
+        string displayName,
+        Category category,
+        Money price,
+        List<MenuItem> parts,
+        bool isAvailable)
+        : base(id, displayName, category, price,
+            parts.Aggregate(Allergen.None, (all, part) => all | part.Allergens),
+            isAvailable && parts.All(part => part.IsAvailable))
+    {
+        Parts = parts.AsReadOnly();
+    }
+
+    private static List<MenuItem> CheckedParts(IEnumerable<MenuItem> parts)
     {
         ArgumentNullException.ThrowIfNull(parts);
 
@@ -27,7 +40,7 @@ public sealed class Combo : MenuItem
         if (list.Any(p => p is null))
             throw new ArgumentException("A combo cannot contain a null part.", nameof(parts));
 
-        return list.Aggregate(Allergen.None, (all, part) => all | part.Allergens);
+        return list;
     }
 
     public override string Describe() =>

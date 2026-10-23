@@ -16,7 +16,5 @@ public sealed class OrderLine
         Item = item;
         Quantity = quantity;
     }
-
-    /// <summary>Unit price times quantity (not rounded).</summary>
-    public decimal Total => Item.Price.Amount * Quantity;
+    
 }
