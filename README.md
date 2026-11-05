@@ -2,7 +2,7 @@
 
 *The FCPL lab runs as **SharpQuest**, the quest to learn C#. That's why the tooling and some code say SharpQuest.*
 
-*_Avatar - Brown Otter * ___
+*Avatar - Brown Otter *
 
 Café POS
 The till for a small café — orders in, totals right, nothing lost.
