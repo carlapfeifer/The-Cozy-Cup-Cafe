@@ -2,12 +2,14 @@ using SharpQuest.Contracts;
 
 namespace Capstone.Core.Models;
 
-public abstract class MenuItem : IItem,IPriced
+public abstract class MenuItem : IItem, IPriced
 {
     public string Id { get; }
     public string DisplayName { get; }
     public Category Category { get; }
+
     public Money Price { get; }
+
     //public Size? Size { get; }            
     public Allergen Allergens { get; }
     public bool IsAvailable { get; }
@@ -17,7 +19,7 @@ public abstract class MenuItem : IItem,IPriced
         string displayName,
         Category category,
         Money price,
-       // Size? size = null,
+        // Size? size = null,
         Allergen allergens = Allergen.None,
         bool isAvailable = true)
     {
@@ -37,13 +39,16 @@ public abstract class MenuItem : IItem,IPriced
         Allergens = allergens;
         IsAvailable = isAvailable;
     }
-    
+
     /// <summary>
     /// every kind must describe itself
     /// </summary>
     /// <returns></returns>
     public abstract string Describe();
-    
+
+    public abstract MenuItem WithAvailability(bool isAvailable);
+    public abstract MenuItem WithPrice(Money price);
+
     /// <summary>
     /// shared part of every description
     /// </summary>

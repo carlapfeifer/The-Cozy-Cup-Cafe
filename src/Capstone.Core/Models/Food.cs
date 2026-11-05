@@ -11,12 +11,16 @@ public sealed class Food : MenuItem
         bool isAvailable = true)
         : base(id, displayName, category, price, allergens, isAvailable)
     {
-        
     }
-    
-    public override string Describe() => 
+
+    public override string Describe() =>
         Allergens == Allergen.None
-            ? $"{Card()} · food · no allergens"
-            : $"{Card()} · food · contains {Allergens}";
-    
+            ? $"{Card()} · food · no allergens · {Price.Amount:0.00} {Price.Currency} · {(IsAvailable ? "available" : "unavailable")}"
+            : $"{Card()} · food · contains {Allergens} · {Price.Amount:0.00} {Price.Currency} · {(IsAvailable ? "available" : "unavailable")}";
+
+    public override MenuItem WithAvailability(bool isAvailable) =>
+        new Food(Id, DisplayName, Category, Price, Allergens, isAvailable);
+
+    public override MenuItem WithPrice(Money price) =>
+        new Food(Id, DisplayName, Category, price, Allergens, IsAvailable);
 }

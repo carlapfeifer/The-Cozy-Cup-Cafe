@@ -45,4 +45,10 @@ public sealed class Combo : MenuItem
 
     public override string Describe() =>
         $"{Card()} · combo of {string.Join(" + ", Parts.Select(p => p.DisplayName))} · {Price.Amount:0.00} {Price.Currency}";
+
+    public override MenuItem WithAvailability(bool isAvailable) =>
+        new Combo(Id, DisplayName, Category, Price, Parts, isAvailable);
+
+    public override MenuItem WithPrice(Money price) =>
+        new Combo(Id, DisplayName, Category, price, Parts, IsAvailable);
 }

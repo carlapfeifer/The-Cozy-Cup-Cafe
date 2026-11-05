@@ -31,6 +31,25 @@ public sealed class RecentlyUsed<T>
             _values.RemoveAt(_values.Count - 1);      // the oldest drops out
     }
 
+    public bool Replace(T existingValue, T replacement)
+    {
+        var comparer = EqualityComparer<T>.Default;
+        var existingIndex = _values.FindIndex(value => comparer.Equals(value, existingValue));
+        if (existingIndex < 0)
+            return false;
+
+        var duplicateIndex = _values.FindIndex(value => comparer.Equals(value, replacement));
+        if (duplicateIndex >= 0 && duplicateIndex != existingIndex)
+        {
+            _values.RemoveAt(duplicateIndex);
+            if (duplicateIndex < existingIndex)
+                existingIndex--;
+        }
+
+        _values[existingIndex] = replacement;
+        return true;
+    }
+
     /// <summary>The values, newest first.</summary>
     public IEnumerable<T> Items() => _values.ToArray();
 }

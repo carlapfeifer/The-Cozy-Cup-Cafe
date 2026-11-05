@@ -96,6 +96,20 @@ public class Lab05Tests
     }
 
     [Fact]
+    public void RecentlyUsed_replaces_an_existing_value_without_changing_its_order()
+    {
+        var recent = new RecentlyUsed<string>(3);
+        recent.Push("croissant");
+        recent.Push("pistachio roll");
+        recent.Push("mocha");
+
+        Assert.True(recent.Replace("croissant", "butter croissant"));
+
+        Assert.Equal(new[] { "mocha", "pistachio roll", "butter croissant" }, recent.Items());
+        Assert.False(recent.Replace("missing", "new value"));
+    }
+
+    [Fact]
     public void RecentlyUsed_rejects_invalid_capacity()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => new RecentlyUsed<int>(0));
