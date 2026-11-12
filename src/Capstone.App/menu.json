@@ -1,0 +1,51 @@
+[
+  {
+    "id": "cof-001",
+    "displayName": "Latte",
+    "category": { "id": "cof", "name": "Coffee" },
+    "price": { "amount": 14, "currency": "RON" },
+    "size": "Large",
+    "allergens": [],
+    "isAvailable": true
+  },
+  {
+    "id": "cof-002",
+    "displayName": "Espresso",
+    "category": { "id": "cof", "name": "Coffee" },
+    "price": { "amount": 9, "currency": "RON" },
+    "size": "Small",
+    "allergens": [],
+    "isAvailable": true
+  },
+  {
+    "id": "pas-001",
+    "displayName": "Croissant",
+    "category": { "id": "pas", "name": "Pastries" },
+    "price": { "amount": 8, "currency": "RON" },
+    "allergens": ["Gluten"],
+    "isAvailable": true
+  },
+  {
+    "id": "pas-002",
+    "displayName": "Pistachio roll",
+    "category": { "id": "pas", "name": "Pastries" },
+    "price": { "amount": 11, "currency": "RON" },
+    "allergens": ["Gluten", "Nuts"],
+    "isAvailable": true
+  },
+  {
+    "id": "cof-003",
+    "displayName": "Mocha",
+    "category": { "id": "cof", "name": "Coffee" },
+    "price": { "amount": 13, "currency": "RON" },
+    "size": "Medium",
+    "allergens": ["Milk"],
+    "isAvailable": false
+  },
+  {
+    "id": "pas-invalid",
+    "displayName": "",
+    "category": { "id": "pas", "name": "Pastries" },
+    "price": { "amount": 5, "currency": "RON" }
+  }
+]

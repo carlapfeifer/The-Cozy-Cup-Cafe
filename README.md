@@ -15,6 +15,37 @@ Something happens when: an item joins the menu, an order is completed, or someth
 Parent and children: a Category has many menu items
 What you'll look at: the menu, searchable, and an order being built
 Good for you if you'd rather build something that looks like a real job than a game — and you like getting money exactly right.
+
+
+## Session 2 — Types & modelling
+- **Classes:** `MenuItem`, `Drink`, `Food`, `CafeStore`, `MenuItemMapper`, and `Lab02Wiring`.
+- **What they do:** Model café menu items, store them, and map menu items to and from JSON.
+- **Where to see them:** The app should load menu items from JSON and print them, skipping invalid entries.
+
+## Session 3 — Testing & the contract
+- **Classes:** `SearchMatcherTests` and `Lab03Wiring`.
+- **What they do:** Test menu-search behavior and return matching items in store order.
+- **Where to see them:** Run `sq test` for the matcher mutation checks and Lab 03 contract tests.
+
+## Session 4 — OOP & pattern matching
+- **Classes:** `MenuItem`, `Drink`, `Food`, and `Lab04Wiring`.
+- **What they do:** Use an abstract menu-item base with kind-specific descriptions, plus classification and order helpers.
+- **Where to see them:** Run `sq test` for the polymorphism, switch-expression, `TryFindByName`, and `AddAll` checks.
+
+## Session 5 — Collections & generics
+- **Classes:** `CafeStore`, `RecentlyUsed<T>`, and `Lab05Wiring`.
+- **What they do:** Provide an iterable menu collection with indexers and lazy matching, plus a bounded recent-items list.
+- **Where to see them:** The app iterates over the menu; run `sq test` for collection and generic behavior.
+
+## Session 6 — Functions & events
+- **Classes:** `CafeStore`, `StoreFunctions`, `MenuBoard`, `CategoryBoard`, `RecentLog`, and `Lab06Wiring`.
+- **What they do:** Publish menu changes to subscribers and apply caller-provided functions to store items.
+- **Where to see them:** Run the app to see subscriber output, or `sq test` for event and function checks.
+
+## Session 7 — LINQ
+- **Classes:** `ItemQueries` and `Lab07Wiring`.
+- **What they do:** Query menu names, sort and page items, find the longest names, and summarize the menu.
+- **Where to see them:** Run the app to see the LINQ query results printed from `Program.cs`.
 ---
 
 ## Getting your own copy (session 1, browser only)
