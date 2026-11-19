@@ -46,6 +46,11 @@ Good for you if you'd rather build something that looks like a real job than a g
 - **Classes:** `ItemQueries` and `Lab07Wiring`.
 - **What they do:** Query menu names, sort and page items, find the longest names, and summarize the menu.
 - **Where to see them:** Run the app to see the LINQ query results printed from `Program.cs`.
+
+## Session 8 — Persistence & async
+- **Classes:** `MenuFileStorage`, `Lab08Wiring`, and `Program`.
+- **What they do:** Save and reload every menu item asynchronously, including its kind, category, price, and item-specific values.
+- **Where to see them:** Run the app twice; it loads and updates `menu-state.json` beside the executable.
 ---
 
 ## Getting your own copy (session 1, browser only)
