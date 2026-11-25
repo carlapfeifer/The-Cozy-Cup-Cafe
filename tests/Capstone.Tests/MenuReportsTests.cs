@@ -118,4 +118,43 @@ public class MenuReportsTests
         Assert.Throws<ArgumentNullException>(() => MenuReports.AverageOrderValue(null!));
         Assert.Throws<ArgumentNullException>(() => MenuReports.VeganUnder(null!, 15m));
     }
+    [Fact]
+    public void Seeded_report_generation_is_repeatable()
+    {
+        var first = CafeDataGenerator.GenerateOrders(Menu, 50, 2026);
+        var second = CafeDataGenerator.GenerateOrders(Menu, 50, 2026);
+
+        Assert.Equal(first.Count, second.Count);
+
+        for (var i = 0; i < first.Count; i++)
+        {
+            Assert.Equal(first[i].PlacedAt, second[i].PlacedAt);
+            Assert.Equal(first[i].Subtotal, second[i].Subtotal);
+            Assert.Equal(first[i].DiscountPercent, second[i].DiscountPercent);
+            Assert.Equal(first[i].ServiceMode, second[i].ServiceMode);
+        }
+    }
+
+    [Fact]
+    public void Seeded_report_generation_creates_50_orders()
+    {
+        var orders = CafeDataGenerator.GenerateOrders(Menu, 50, 2026);
+
+        Assert.Equal(50, orders.Count);
+        Assert.All(orders, order => Assert.NotEmpty(order.Lines));
+    }
+
+    [Fact]
+    public void Seeded_report_generation_rejects_non_positive_count()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(
+            () => CafeDataGenerator.GenerateOrders(Menu, 0, 2026));
+    }
+
+    [Fact]
+    public void Seeded_report_generation_rejects_null_menu()
+    {
+        Assert.Throws<ArgumentNullException>(
+            () => CafeDataGenerator.GenerateOrders(null!, 50, 2026));
+    }
 }

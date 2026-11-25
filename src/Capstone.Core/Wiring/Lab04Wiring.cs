@@ -71,10 +71,28 @@ public sealed class Lab04Wiring : ILab04Wiring
     public string Classify(IItem item) => item switch
     {
         null => throw new ArgumentNullException(nameof(item)),
+        MenuItem { IsAvailable: false } => "unavailable",
+        Combo { Parts.Count: >= 3 } => "large combo",
+        Drink { Size: Size.Large } => "large drink",
         Drink => "drink",
+        Food { Price.Amount: >= 20m } => "premium food",
         Food => "food",
         Combo => "combo",
         _ => "something else",
+    };
+
+    public string PrepareOrder(IItem item) => item switch
+    {
+        null => throw new ArgumentNullException(nameof(item)),
+        MenuItem { IsAvailable: false } => "item unavailable",
+        Combo { Parts.Count: >= 3 } => $"prepare large combo ({((MenuItem)item).EstimatedPreparationMinutes} min)",
+        Combo => $"prepare combo ({((MenuItem)item).EstimatedPreparationMinutes} min)",
+        Drink { IsDecaf: true, IsHot: true } => $"prepare decaf hot drink ({((MenuItem)item).EstimatedPreparationMinutes} min)",
+        Drink { IsHot: false } => $"prepare cold drink ({((MenuItem)item).EstimatedPreparationMinutes} min)",
+        Drink => $"prepare drink ({((MenuItem)item).EstimatedPreparationMinutes} min)",
+        Food food when food.Price.Amount >= 20m => $"prepare premium food ({((MenuItem)item).EstimatedPreparationMinutes} min)",
+        Food => $"prepare food ({((MenuItem)item).EstimatedPreparationMinutes} min)",
+        _ => "prepare other item"
     };
 
     /// <summary>

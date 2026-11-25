@@ -8,11 +8,13 @@ public class FrankfurterRateProviderTests
     private sealed class StubHandler(HttpStatusCode status, string body) : HttpMessageHandler
     {
         public Uri? LastRequest { get; private set; }
+        public int RequestCount { get; private set; }
 
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
             LastRequest = request.RequestUri;
+            RequestCount++;
             return Task.FromResult(new HttpResponseMessage(status) { Content = new StringContent(body) });
         }
     }
@@ -68,5 +70,20 @@ public class FrankfurterRateProviderTests
 
         Assert.Equal(1m, rate);
         Assert.Null(handler.LastRequest);
+    }
+
+    [Fact]
+    public async Task Successful_rate_is_reused_for_later_requests()
+    {
+        var handler = new StubHandler(HttpStatusCode.OK, RonToEur);
+        var provider = ProviderFor(handler);
+
+        var first = await provider.GetRateAsync("RON", "EUR");
+        var firstRequest = handler.LastRequest;
+        var second = await provider.GetRateAsync("ron", "eur");
+
+        Assert.Equal(first, second);
+        Assert.Equal(firstRequest, handler.LastRequest);
+        Assert.Equal(1, handler.RequestCount);
     }
 }

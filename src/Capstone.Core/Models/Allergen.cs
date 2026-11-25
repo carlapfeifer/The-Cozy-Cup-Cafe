@@ -8,5 +8,7 @@ public enum Allergen
     Milk = 2,
     Eggs = 4,
     Nuts = 8,
-    Soy = 16
+    Soy = 16,
+    Fish = 32,
+    Sesame = 64
 }

@@ -11,16 +11,26 @@ namespace Capstone.Core.Storage;
 /// </summary>
 public static class MenuFile
 {
+    public const int CurrentFormatVersion = 1;
+    
     private static readonly JsonSerializerOptions Options = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true,
         WriteIndented = true
     };
+    internal static JsonSerializerOptions SerializerOptions => Options;
+    private sealed class MenuDocument
+    {
+        public int FormatVersion { get; set; }
+        public DateTime SavedAtUtc { get; set; }
+        public List<ItemRow>? Items { get; set; }
+    }
 
     // One row of the file: a field for everything an item carries, and the kind.
-    private sealed class ItemRow
+    internal sealed class ItemRow
     {
+        public ItemRow(){}
         public string? Kind { get; set; }              // "drink", "food" or "combo"
         public string? Id { get; set; }
         public string? DisplayName { get; set; }
@@ -31,60 +41,129 @@ public static class MenuFile
         public string? Size { get; set; }              // drinks only
         public List<string>? Allergens { get; set; }   // not stored for combos: they come from the parts
         public bool? IsAvailable { get; set; }
+        public bool? IsFeatured { get; set; }
+        public string? Sku { get; set; }
+        public bool? IsHot { get; set; }
+        public bool? IsDecaf { get; set; }
+        public int? PreparationTimeMinutes { get; set; }
+        
+        public decimal? CategoryVatPercent { get; set; }
+        public string? CategoryIcon { get; set; }
+        public string? CategoryDisplayColor { get; set; }
+        public decimal? DineInVatPercent { get; set; }
+        public decimal? TakeawayVatPercent { get; set; }
         public List<ItemRow>? Parts { get; set; }      // combos only
     }
 
-    public static async Task SaveAsync(IItemStore store, string path)
+public static Task SaveAsync(IItemStore store, string path) =>
+    SaveAsync(store, path, CancellationToken.None);
+
+public static async Task SaveAsync(
+    IItemStore store,
+    string path,
+    CancellationToken cancellationToken)
+{
+    ArgumentNullException.ThrowIfNull(store);
+    ArgumentException.ThrowIfNullOrWhiteSpace(path);
+    cancellationToken.ThrowIfCancellationRequested();
+
+    var document = new MenuDocument
     {
-        ArgumentNullException.ThrowIfNull(store);
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+        FormatVersion = CurrentFormatVersion,
+        SavedAtUtc = DateTime.UtcNow,
+        Items = store.All().Select(ToRow).ToList()
+    };
 
-        if (Path.GetDirectoryName(Path.GetFullPath(path)) is { Length: > 0 } folder)
-            Directory.CreateDirectory(folder);          // asking the user to mkdir first is rude
+    await AtomicFile.WriteAsync(
+        path,
+        async (stream, token) =>
+            await JsonSerializer.SerializeAsync(stream, document, Options, token),
+        cancellationToken);
+}
 
-        var rows = store.All().Select(ToRow).ToList();  // our rows, not the store object
+public static Task<IItemStore> LoadAsync(string path) =>
+    LoadAsync(path, CancellationToken.None);
 
-        // Write the whole file next to the real one, then move it over the real one.
-        // A crash halfway through leaves the old file intact instead of half a new one.
-        var tempPath = path + ".tmp";
-        await using (var stream = File.Create(tempPath))
-        {
-            await JsonSerializer.SerializeAsync(stream, rows, Options);
-        }                                               // closed here, before the move
-        File.Move(tempPath, path, overwrite: true);
-    
+public static async Task<IItemStore> LoadAsync(
+    string path,
+    CancellationToken cancellationToken)
+{
+    ArgumentException.ThrowIfNullOrWhiteSpace(path);
+    cancellationToken.ThrowIfCancellationRequested();
+
+    FileStream stream;
+
+    try
+    {
+        stream = new FileStream(
+            path,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.Read,
+            bufferSize: 4096,
+            options: FileOptions.Asynchronous);
+    }
+    catch (FileNotFoundException)
+    {
+        return new CafeStore();
+    }
+    catch (DirectoryNotFoundException)
+    {
+        return new CafeStore();
     }
 
-    public static async Task<IItemStore> LoadAsync(string path)
+    try
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
-
-        // Nothing saved yet (or no such folder): the first run of every program. Not an error.
-        if (!File.Exists(path))
-            return new CafeStore();
-
-        try
+        await using (stream)
+        using (var document = await JsonDocument.ParseAsync(
+                   stream,
+                   cancellationToken: cancellationToken))
         {
-            await using var stream = File.OpenRead(path);
-            var rows = await JsonSerializer.DeserializeAsync<List<ItemRow>>(stream, Options)
-                       ?? throw new InvalidDataException($"'{path}' does not contain a list of menu items.");
+            List<ItemRow> rows;
+
+            // Accept the old array format so existing saved files still load.
+            if (document.RootElement.ValueKind == JsonValueKind.Array)
+            {
+                rows = document.RootElement.Deserialize<List<ItemRow>>(Options)
+                       ?? throw new InvalidDataException("The menu file has no item list.");
+            }
+            else if (document.RootElement.ValueKind == JsonValueKind.Object)
+            {
+                var saved = document.RootElement.Deserialize<MenuDocument>(Options)
+                            ?? throw new InvalidDataException("The menu file is invalid.");
+
+                if (saved.FormatVersion != CurrentFormatVersion)
+                    throw new InvalidDataException(
+                        $"Unsupported menu format version {saved.FormatVersion}.");
+
+                rows = saved.Items
+                       ?? throw new InvalidDataException("The menu file has no item list.");
+            }
+            else
+            {
+                throw new InvalidDataException("The menu file must contain an object or item array.");
+            }
 
             var store = new CafeStore();
             foreach (var row in rows)
-                store.Add(FromRow(row));                // a duplicate id in the file throws ArgumentException
+                store.Add(FromRow(row));
+
             return store;
         }
-        catch (JsonException ex)
-        {
-            throw new InvalidDataException($"'{path}' is not a valid menu file.", ex);
-        }
-        catch (ArgumentException ex)                    // bad values, rejected by the model's own guards
-        {
-            throw new InvalidDataException($"'{path}' holds an item that is not valid: {ex.Message}", ex);
-        }
     }
+    catch (JsonException ex)
+    {
+        throw new InvalidDataException($"'{path}' is not a valid menu file.", ex);
+    }
+    catch (ArgumentException ex)
+    {
+        throw new InvalidDataException($"'{path}' contains an invalid menu item: {ex.Message}", ex);
+    }
+}
 
-    private static ItemRow ToRow(IItem item)
+   
+
+    internal static ItemRow ToRow(IItem item)
     {
         if (item is not MenuItem menuItem)
             throw new ArgumentException($"Only {nameof(MenuItem)} can be saved, got {item.GetType().Name}.", nameof(item));
@@ -98,6 +177,14 @@ public static class MenuFile
             Amount = menuItem.Price.Amount,
             Currency = menuItem.Price.Currency,
             IsAvailable = menuItem.IsAvailable,
+            IsFeatured = menuItem.IsFeatured,
+            Sku = menuItem.Sku,
+            PreparationTimeMinutes = menuItem.PreparationTimeMinutes,
+            CategoryVatPercent = menuItem.Category.VatPercent,
+            CategoryIcon = menuItem.Category.Icon,
+            CategoryDisplayColor = menuItem.Category.DisplayColor,
+            DineInVatPercent = menuItem.Vat.DineInPercent,
+            TakeawayVatPercent = menuItem.Vat.TakeawayPercent,
         };
 
         switch (menuItem)
@@ -105,6 +192,8 @@ public static class MenuFile
             case Drink drink:
                 row.Kind = "drink";
                 row.Size = drink.Size.ToString();
+                row.IsHot = drink.IsHot;
+                row.IsDecaf = drink.IsDecaf;
                 row.Allergens = AllergenNames(drink.Allergens);
                 break;
             case Food food:
@@ -122,42 +211,99 @@ public static class MenuFile
         return row;
     }
 
-    private static MenuItem FromRow(ItemRow? row)
+    internal static MenuItem FromRow(ItemRow? row)
     {
         if (row?.Id is null || row.DisplayName is null || row.CategoryId is null || row.CategoryName is null
-            || row.Amount is null || row.Currency is null)
+            || row.Amount is null || row.Currency is null || row.Kind is null )
             throw new InvalidDataException("A row is missing a required field.");
+        if (row.Sku is not null &&
+            string.IsNullOrWhiteSpace(row.Sku))
+        {
+            throw new InvalidDataException("A row contains a blank SKU.");
+        }
 
-        var category = new Category(row.CategoryId, row.CategoryName);
+        var category = new Category(
+            row.CategoryId,
+            row.CategoryName,
+            row.CategoryVatPercent ?? 11m,
+            row.CategoryIcon ?? "category",
+            row.CategoryDisplayColor ?? "#D8B59D");
+
         var price = new Money(row.Amount.Value, row.Currency);
+        var vat = new VatInfo(
+            row.DineInVatPercent ?? 11m,
+            row.TakeawayVatPercent ?? 11m);
         var available = row.IsAvailable ?? true;
+        var featured = row.IsFeatured ?? false;
+        var sku = row.Sku;
+        var preparationTimeMinutes = row.PreparationTimeMinutes ?? 5;
 
         switch (row.Kind)
         {
             case "drink":
-                if (!Enum.TryParse<Size>(row.Size, ignoreCase: true, out var size) || !Enum.IsDefined(size))
+                if (row.Size is null
+                    || !Enum.TryParse<Size>(row.Size, ignoreCase: true, out var size)
+                    || !Enum.IsDefined(size))
+                {
                     throw new InvalidDataException($"'{row.Size}' is not a drink size.");
-                return new Drink(row.Id, row.DisplayName, category, price, size, ParseAllergens(row.Allergens), available);
+                }
+                return new Drink(
+                    row.Id,
+                    row.DisplayName,
+                    category,
+                    price,
+                    size,
+                    ParseAllergens(row.Allergens),
+                    available,
+                    featured,
+                    row.IsHot ?? true,
+                    preparationTimeMinutes,
+                    sku,
+                    vat,
+                    row.IsDecaf ?? false
+                    );
 
             case "food":
-                return new Food(row.Id, row.DisplayName, category, price, ParseAllergens(row.Allergens), available);
+                return new Food(
+                    row.Id,
+                    row.DisplayName,
+                    category,
+                    price,
+                    ParseAllergens(row.Allergens),
+                    available,
+                    featured,
+                    preparationTimeMinutes,
+                    sku,vat);
 
             case "combo":
-                var parts = (row.Parts ?? new List<ItemRow>()).Select(FromRow).ToList();
-                return new Combo(row.Id, row.DisplayName, category, price, parts, available);
+                if (row.Parts is not { Count: > 0 })
+                    throw new InvalidDataException("A combo must contain at least one part.");
+
+                var parts = row.Parts.Select(FromRow).ToList();
+               
+                return new Combo(
+                    row.Id,
+                    row.DisplayName,
+                    category,
+                    price,
+                    parts,
+                    available,
+                    featured,
+                    preparationTimeMinutes,
+                    sku,vat);
 
             default:
                 throw new InvalidDataException($"'{row.Kind}' is not a kind of menu item.");
         }
     }
 
-    private static List<string> AllergenNames(Allergen allergens) =>
+    internal static List<string> AllergenNames(Allergen allergens) =>
         Enum.GetValues<Allergen>()
             .Where(a => a != Allergen.None && allergens.HasFlag(a))
             .Select(a => a.ToString())
             .ToList();
 
-    private static Allergen ParseAllergens(List<string>? names)
+    internal static Allergen ParseAllergens(List<string>? names)
     {
         var result = Allergen.None;
         foreach (var name in names ?? new List<string>())

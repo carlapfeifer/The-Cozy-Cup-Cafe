@@ -13,24 +13,39 @@ public abstract class MenuItem : IItem, IPriced
     //public Size? Size { get; }            
     public Allergen Allergens { get; }
     public bool IsAvailable { get; }
-
+    
+    public bool IsFeatured { get; }
+    public int PreparationTimeMinutes { get; }
+    public string Sku { get; }   //stock keeping unit - short code for ordering, inventory, receipts 
+    public VatInfo Vat { get; }
     protected MenuItem(
+        string sku,
         string id,
         string displayName,
         Category category,
         Money price,
         // Size? size = null,
         Allergen allergens = Allergen.None,
-        bool isAvailable = true)
+        bool isAvailable = true,
+        bool isFeatured = false,
+        int preparationTimeMinutes = 5,
+        VatInfo? vat = null
+        )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
         ArgumentException.ThrowIfNullOrWhiteSpace(displayName);
         ArgumentNullException.ThrowIfNull(category);
         ArgumentNullException.ThrowIfNull(price);
+        ArgumentException.ThrowIfNullOrWhiteSpace(sku);
 
         if (price.Amount < 0)
             throw new ArgumentOutOfRangeException(nameof(price), "Price cannot be negative.");
-
+        if (preparationTimeMinutes < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(preparationTimeMinutes), "Preparation time must be at least one minute .");
+        }
+        
+        Sku = sku;
         Id = id;
         DisplayName = displayName;
         Category = category;
@@ -38,6 +53,9 @@ public abstract class MenuItem : IItem, IPriced
         //Size = size;
         Allergens = allergens;
         IsAvailable = isAvailable;
+        IsFeatured = isFeatured;
+        PreparationTimeMinutes = preparationTimeMinutes;
+        Vat = vat ?? new VatInfo(11m, 11m);
     }
 
     /// <summary>
@@ -46,8 +64,27 @@ public abstract class MenuItem : IItem, IPriced
     /// <returns></returns>
     public abstract string Describe();
 
+    /// <summary>Estimated minutes needed to prepare this kind of menu item.</summary>
+    public abstract int EstimatedPreparationMinutes { get; }
+
     public abstract MenuItem WithAvailability(bool isAvailable);
     public abstract MenuItem WithPrice(Money price);
+    private static readonly TimeOnly HalfPriceFrom = new(18, 0);
+
+    public decimal FinalPrice(TimeOnly time)
+    {
+        var amount = this switch
+        {
+            Drink { Size: Size.Large } => Price.Amount * 1.20m,
+            Food when time >= HalfPriceFrom => Price.Amount * 0.50m,
+            _ => Price.Amount
+        };
+
+        return Math.Round(
+            amount,
+            2,
+            MidpointRounding.AwayFromZero);
+    }
 
     /// <summary>
     /// shared part of every description

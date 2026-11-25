@@ -18,39 +18,40 @@ Good for you if you'd rather build something that looks like a real job than a g
 
 
 ## Session 2 — Types & modelling
-- **Classes:** `MenuItem`, `Drink`, `Food`, `CafeStore`, `MenuItemMapper`, and `Lab02Wiring`.
-- **What they do:** Model café menu items, store them, and map menu items to and from JSON.
-- **Where to see them:** The app should load menu items from JSON and print them, skipping invalid entries.
+- **Classes:** `Category`, `Money`, `MenuItem`, `Drink`, `Food`, `Combo`, `CafeStore`, `MenuItemMapper`, and `Lab02Wiring`.
+- **What they do:** Define validated café menu types, item kinds, allergens, prices, and categories; store items; and map JSON to domain objects while rejecting invalid input.
+- **Where to see them:** Run the app to load the starter menu from `src/Capstone.App/menu.json` and print the items. Run `sq test` for the Lab 02 contract checks.
 
 ## Session 3 — Testing & the contract
-- **Classes:** `SearchMatcherTests` and `Lab03Wiring`.
-- **What they do:** Test menu-search behavior and return matching items in store order.
-- **Where to see them:** Run `sq test` for the matcher mutation checks and Lab 03 contract tests.
+- **Classes:** `Lab03Wiring`, `SearchMatcher`, and the tests in `tests/Capstone.Tests/`.
+- **What they do:** Implement and test the specified menu-search behavior, including matching rules and preserving store order. The project tests also undergo mutation checks against deliberately broken implementations.
+- **Where to see them:** Run `sq test`; the latest run caught all 8/8 Lab 03 mutations and passed the Lab 03 contract checks.
 
 ## Session 4 — OOP & pattern matching
-- **Classes:** `MenuItem`, `Drink`, `Food`, and `Lab04Wiring`.
-- **What they do:** Use an abstract menu-item base with kind-specific descriptions, plus classification and order helpers.
-- **Where to see them:** Run `sq test` for the polymorphism, switch-expression, `TryFindByName`, and `AddAll` checks.
+- **Classes:** `MenuItem`, `Drink`, `Food`, `Combo`, `Order`, `OrderLine`, pricing/VAT types, and `Lab04Wiring`.
+- **What they do:** Use polymorphic menu items and kind-specific descriptions, model combo parts, and calculate order totals with quantity, availability, currency, time-based pricing, discounts, rounding, and service-mode VAT rules.
+- **Where to see them:** Run the app for item descriptions and order/report examples. Run `sq test` for the polymorphism, pattern-matching, and contract checks.
 
 ## Session 5 — Collections & generics
-- **Classes:** `CafeStore`, `RecentlyUsed<T>`, and `Lab05Wiring`.
-- **What they do:** Provide an iterable menu collection with indexers and lazy matching, plus a bounded recent-items list.
-- **Where to see them:** The app iterates over the menu; run `sq test` for collection and generic behavior.
+- **Classes:** `CafeStore`, `RecentlyUsed<T>`, `CompletedOrderHistory`, and `Lab05Wiring`.
+- **What they do:** Provide an ordered iterable store with integer, ID, and category indexers; lazy matching and LINQ slicing; category lookups/counts; and snapshots of available items. Generic recent-item collections validate capacity, preserve newest-first order, and back recent completed-order history.
+- **Where to see them:** Run the app to see the menu iterated in order. Run `sq test` for collection indexing, category behavior, snapshots, slicing, and recent-history tests.
 
 ## Session 6 — Functions & events
-- **Classes:** `CafeStore`, `StoreFunctions`, `MenuBoard`, `CategoryBoard`, `RecentLog`, and `Lab06Wiring`.
-- **What they do:** Publish menu changes to subscribers and apply caller-provided functions to store items.
-- **Where to see them:** Run the app to see subscriber output, or `sq test` for event and function checks.
+- **Classes:** `CafeStore`, `MenuSubscription`, `StoreFunctions`, `MenuBoard`, `CategoryBoard`, `RecentLog`, `TodayTakings`, `SalesLog`, `AvailabilityTransitionLog`, `FeaturedMenuCache`, `CategorySalesCounter`, `ReceiptMemory`, and `Lab06Wiring`.
+- **What they do:** Publish add, update, removal, availability, price, sold-out, order-completed, and general menu-change notifications. Disposable subscriptions unsubscribe safely; subscribers maintain takings, sales, restock logs, featured-item cache, category totals, and in-memory receipt lines. Store updates happen independently of subscribers, and unavailable items cannot be added to orders.
+- **Where to see them:** Run the app to see event and subscriber output; run `sq test` for event ordering, unsubscribe, subscriber, and function tests.
 
 ## Session 7 — LINQ
-- **Classes:** `ItemQueries` and `Lab07Wiring`.
-- **What they do:** Query menu names, sort and page items, find the longest names, and summarize the menu.
-- **Where to see them:** Run the app to see the LINQ query results printed from `Program.cs`.
+- **Classes:** `ItemQueries`, `MenuReports`, `CafeDataGenerator`, `Order`, and `Lab07Wiring`.
+- **What they do:** Query, sort, page, and summarize menu items; filter available, vegan, and category-specific items; and format receipt lines. Reports use grouping and joins for category counts, sales, payment methods, and order lines, plus best sellers, hourly revenue, never-ordered items, average/biggest orders, and pastry sales. The app generates 50 deterministic sample orders across five or more categories, with discounts and unavailable menu items. Frankfurter supplies a live EUR conversion for displayed menu prices without changing the saved RON prices.
+- **Where to see them:** Run the app to see the query results and café reports printed from `Program.cs`. Run `sq test` for LINQ and report behavior.
 
 ## Session 8 — Persistence & async
-- **Classes:** `MenuFileStorage`, `Lab08Wiring`, and `Program`.
-- **What they do:** Save and reload every menu item asynchronously, including its kind, category, price, and item-specific values.
-- **Where to see them:** Run the app twice; it loads and updates `menu-state.json` beside the executable.
+- **Classes:** `IMenuStorage`, `JsonMenuStorage`, `CsvMenuStorage`, `MenuFile`, `AtomicFile`, `CompletedOrderHistoryFile`, and `Lab08Wiring`.
+- **What they do:** Save and reload menu items asynchronously as versioned JSON or CSV, selected by file extension. They preserve item kinds and fields, validate malformed data, write through a temporary file, and keep a `.bak` backup after replacing an existing save. Completed orders are persisted separately from the menu.
+- **Where to see them:** Run the app to load and save `menu-state.json` beside the executable and inspect the persistence demo in `Program.cs`. Completed-order history uses its own `completed-orders.json` file. Run `sq test` for the Lab 08 contract and persistence tests.
+- **Verification:** Latest `sq test` passed Labs 02–08, including Lab 08 contract checks (38/38), Lab 03 mutation checks (8/8), and the project test suite (241/241).
 ---
 
 ## Getting your own copy (session 1, browser only)

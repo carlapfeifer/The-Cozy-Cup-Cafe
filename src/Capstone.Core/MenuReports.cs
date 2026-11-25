@@ -8,6 +8,30 @@ public sealed record CategoryBestSeller(string Category, string Item, int UnitsS
 /// <summary>What the café took in during one hour of the day (0 to 23).</summary>
 public sealed record HourRevenue(int Hour, decimal Revenue);
 
+public sealed record CategoryMenuCount(
+    string CategoryId,
+    string CategoryName,
+    int ItemCount);
+
+public sealed record PaymentMethodRevenue(
+    PaymentMethod Method,
+    string Currency,
+    decimal Revenue);
+
+public sealed record MenuItemSales(
+    string ItemId,
+    string ItemName,
+    int UnitsSold);
+
+public sealed record OrderLineMenuItem(
+    Order Order,
+    MenuItem Item,
+    int Quantity);
+
+public sealed record CategoryMenuItem(
+    Category Category,
+    MenuItem Item);
+
 /// <summary>
 /// Five questions the café owner asks, each answered with one LINQ query.
 /// The logic lives here so the tests can reach it; Program.cs only prints the answers.
@@ -86,4 +110,125 @@ public static class MenuReports
             .Where(item => item.Price.Amount < limit)
             .ToList();
     }
+    
+    public static IReadOnlyList<CategoryMenuCount> MenuItemCountPerCategory(
+    IEnumerable<MenuItem> menu)
+{
+    ArgumentNullException.ThrowIfNull(menu);
+
+    return menu
+        .GroupBy(item => item.Category.Id, StringComparer.OrdinalIgnoreCase)
+        .Select(group => new CategoryMenuCount(
+            group.Key,
+            group.First().Category.Name,
+            group.Count()))
+        .OrderBy(result => result.CategoryName, StringComparer.OrdinalIgnoreCase)
+        .ToList();
+}
+
+public static IReadOnlyList<PaymentMethodRevenue> RevenueByPaymentMethod(
+    IEnumerable<Order> orders)
+{
+    ArgumentNullException.ThrowIfNull(orders);
+
+    return orders
+        .GroupBy(order => new { order.PaymentMethod, order.Currency })
+        .Select(group => new PaymentMethodRevenue(
+            group.Key.PaymentMethod,
+            group.Key.Currency,
+            group.Sum(order => order.Total)))
+        .OrderBy(result => result.Method)
+        .ThenBy(result => result.Currency, StringComparer.Ordinal)
+        .ToList();
+}
+
+public static IReadOnlyList<MenuItemSales> SalesCountPerMenuItem(
+    IEnumerable<Order> orders)
+{
+    ArgumentNullException.ThrowIfNull(orders);
+
+    return orders
+        .SelectMany(order => order.Lines)
+        .GroupBy(line => line.Item.Id, StringComparer.Ordinal)
+        .Select(group => new MenuItemSales(
+            group.Key,
+            group.First().Item.DisplayName,
+            group.Sum(line => line.Quantity)))
+        .OrderBy(result => result.ItemId, StringComparer.Ordinal)
+        .ToList();
+}
+
+public static IReadOnlyList<OrderLineMenuItem> JoinOrderLinesToMenu(
+    IEnumerable<Order> orders,
+    IEnumerable<MenuItem> menu)
+{
+    ArgumentNullException.ThrowIfNull(orders);
+    ArgumentNullException.ThrowIfNull(menu);
+
+    return orders
+        .SelectMany(
+            order => order.Lines,
+            (order, line) => new { Order = order, Line = line })
+        .Join(
+            menu,
+            entry => entry.Line.Item.Id,
+            item => item.Id,
+            (entry, item) => new OrderLineMenuItem(
+                entry.Order,
+                item,
+                entry.Line.Quantity))
+        .ToList();
+}
+
+public static IReadOnlyList<CategoryMenuItem> JoinCategoriesToMenu(
+    IEnumerable<Category> categories,
+    IEnumerable<MenuItem> menu)
+{
+    ArgumentNullException.ThrowIfNull(categories);
+    ArgumentNullException.ThrowIfNull(menu);
+
+    return categories
+        .Join(
+            menu,
+            category => category.Id,
+            item => item.Category.Id,
+            (category, item) => new CategoryMenuItem(category, item))
+        .ToList();
+}
+
+public static Order? BiggestOrder(IEnumerable<Order> orders)
+{
+    ArgumentNullException.ThrowIfNull(orders);
+
+    return orders
+        .OrderByDescending(order => order.Total)
+        .ThenBy(order => order.PlacedAt)
+        .FirstOrDefault();
+}
+
+public static CategoryBestSeller? FastestSellingPastryInFinalTwoHours(
+    IEnumerable<Order> orders)
+{
+    ArgumentNullException.ThrowIfNull(orders);
+
+    return orders
+        .Where(order => order.PlacedAt.Hour is 18 or 19)
+        .SelectMany(order => order.Lines)
+        .Where(line => string.Equals(
+            line.Item.Category.Name,
+            "Pastries",
+            StringComparison.OrdinalIgnoreCase))
+        .GroupBy(line => line.Item.Id, StringComparer.Ordinal)
+        .Select(group =>
+        {
+            var item = group.First().Item;
+            return new CategoryBestSeller(
+                item.Category.Name,
+                item.DisplayName,
+                group.Sum(line => line.Quantity));
+        })
+        .OrderByDescending(result => result.UnitsSold)
+        .ThenBy(result => result.Item, StringComparer.Ordinal)
+        .FirstOrDefault();
+}
 }

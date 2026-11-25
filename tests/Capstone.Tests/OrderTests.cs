@@ -255,4 +255,305 @@ public class OrderTests
         Assert.Throws<InvalidOperationException>(() => order.Add(soldOut, 1));
         Assert.Empty(order.Lines);
     }
+    
+    [Fact]
+    public void Dine_in_vat_is_calculated_at_the_discounted_price()
+    {
+        var drink = new Drink(
+            "c1",
+            "Latte",
+            new Category("cof", "Coffee"),
+            new Money(10m, "RON"),
+            Size.Medium,
+            Allergen.Milk,
+            true,
+            false,
+            true,
+            5,
+            "COF-LAT-M",
+            new VatInfo(11m, 21m));
+
+        var order = new Order(
+            "RON",
+            new DateTime(2026, 11, 24, 10, 0, 0),
+            ServiceMode.DineIn);
+
+        order.Add(drink, 1);
+        order.ApplyDiscount(40m);
+
+        Assert.Equal(6m, order.Total);
+        Assert.Equal(0.59m, order.VatTotal);
+        Assert.Equal(0.59m, order.VatBreakdown[11m]);
+        Assert.Equal(10m, order.Subtotal);
+        Assert.Equal(40m, order.DiscountPercent);
+        Assert.Equal(10m, drink.Price.Amount);
+        Assert.Equal(Size.Medium, drink.Size);
+      
+    }
+
+    [Fact]
+    public void Mixed_combo_vat_is_split_by_component()
+    {
+        var coffee = new Drink(
+            "c1",
+            "Coffee",
+            new Category("cof", "Coffee"),
+            new Money(10m, "RON"),
+            Size.Medium,
+            Allergen.None,
+            true,
+            false,
+            true,
+            5,
+            "COF-001",
+            new VatInfo(11m, 11m));
+
+        var juice = new Drink(
+            "cold-1",
+            "Iced Juice",
+            new Category("cold", "Cold Drinks"),
+            new Money(10m, "RON"),
+            Size.Medium,
+            Allergen.None,
+            true,
+            false,
+            false,
+            5,
+            "COLD-001",
+            new VatInfo(11m, 21m));
+
+        var combo = new Combo(
+            "combo-1",
+            "Mixed Combo",
+            new Category("combo", "Combos"),
+            new Money(15m, "RON"),
+            new MenuItem[] { coffee, juice },
+            true,
+            false,
+            5,
+            "COMBO-001",
+            new VatInfo(11m, 11m));
+
+        var order = new Order(
+            "RON",
+            new DateTime(2026, 11, 24, 12, 0, 0),
+            ServiceMode.Takeaway);
+
+        order.Add(combo, 1);
+
+        Assert.Equal(11m, Assert.Single(order.VatBreakdown, pair => pair.Key == 11m).Key);
+        Assert.Equal(21m, Assert.Single(order.VatBreakdown, pair => pair.Key == 21m).Key);
+    }
+    
+    
+    [Fact]
+    public void Dine_in_uses_reduced_vat()
+    {
+        var item = new Drink(
+            "cof-1",
+            "Latte",
+            new Category("cof", "Coffee", 11m),
+            new Money(14.50m, "RON"),
+            Size.Medium,
+            Allergen.Milk,
+            true,
+            false,
+            true,
+            5,
+            "COF-LAT-M",
+            new VatInfo(11m, 21m));
+
+        var order = new Order(
+            "RON",
+            new DateTime(2026, 11, 24, 10, 0, 0),
+            ServiceMode.DineIn);
+
+        order.Add(item, 1);
+
+        Assert.True(order.VatBreakdown.ContainsKey(11m));
+        Assert.False(order.VatBreakdown.ContainsKey(21m));
+    }
+
+    [Fact]
+    public void Takeaway_uses_standard_vat_for_sugar_drinks()
+    {
+        var item = new Drink(
+            "cof-1",
+            "Latte",
+            new Category("cof", "Coffee", 11m),
+            new Money(14.50m, "RON"),
+            Size.Medium,
+            Allergen.Milk,
+            true,
+            false,
+            true,
+            5,
+            "COF-LAT-M",
+            new VatInfo(11m, 21m));
+
+        var order = new Order(
+            "RON",
+            new DateTime(2026, 11, 24, 10, 0, 0),
+            ServiceMode.Takeaway);
+
+        order.Add(item, 1);
+
+        Assert.True(order.VatBreakdown.ContainsKey(21m));
+    }
+
+    [Fact]
+    public void Sandwich_stays_reduced_for_takeaway()
+    {
+        var item = new Food(
+            "san-1",
+            "Ham sandwich",
+            new Category("san", "Sandwiches", 11m),
+            new Money(22.75m, "RON"),
+            Allergen.Gluten,
+            true,
+            false,
+            5,
+            "SAN-HAM",
+            new VatInfo(11m, 11m));
+
+        var order = new Order(
+            "RON",
+            new DateTime(2026, 11, 24, 12, 0, 0),
+            ServiceMode.Takeaway);
+
+        order.Add(item, 1);
+
+        Assert.True(order.VatBreakdown.ContainsKey(11m));
+    }
+    [Fact]
+    public void Category_rejects_invalid_vat()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(
+            () => new Category("cof", "Coffee", 101m));
+    }
+    [Fact]
+    public void Takeaway_vat_is_calculated_at_the_takeaway_rate()
+    {
+        var drink = new Drink(
+            "c1",
+            "Latte",
+            new Category("cof", "Coffee"),
+            new Money(10m, "RON"),
+            Size.Medium,
+            Allergen.Milk,
+            true,
+            false,
+            true,
+            5,
+            "COF-LAT-M",
+            new VatInfo(11m, 21m));
+
+        var order = new Order(
+            "RON",
+            new DateTime(2026, 11, 24, 10, 0, 0),
+            ServiceMode.Takeaway);
+
+        order.Add(drink, 1);
+
+        Assert.Equal(10m, order.Total);
+        Assert.Equal(1.74m, order.VatTotal);
+        Assert.Equal(1.74m, order.VatBreakdown[21m]);
+    }
+    [Fact]
+    public void Discount_is_not_added_back_when_calculating_vat()
+    {
+        var drink = new Drink(
+            "c1",
+            "Latte",
+            new Category("cof", "Coffee"),
+            new Money(10m, "RON"),
+            Size.Medium,
+            Allergen.Milk,
+            true,
+            false,
+            true,
+            5,
+            "COF-LAT-M",
+            new VatInfo(11m, 21m));
+
+        var order = new Order(
+            "RON",
+            new DateTime(2026, 11, 24, 10, 0, 0),
+            ServiceMode.DineIn);
+
+        order.Add(drink, 1);
+        order.ApplyDiscount(40m);
+
+        Assert.Equal(10m, order.Subtotal);
+        Assert.Equal(40m, order.DiscountPercent);
+        Assert.Equal(6m, order.Total);
+        Assert.Equal(0.59m, order.VatTotal);
+    }
+    
+    [Fact]
+    public void Quantity_zero_is_rejected()
+    {
+        var menuItem = DrinkItem("a", 3.50m);
+
+        Assert.Throws<ArgumentOutOfRangeException>(
+            () => new OrderLine(menuItem, 0));
+    }
+
+    [Fact]
+    public void Negative_quantity_is_rejected()
+    {
+        var menuItem = DrinkItem("a", 3.50m);
+
+        Assert.Throws<ArgumentOutOfRangeException>(
+            () => new OrderLine(menuItem, -1));
+    }
+
+    [Fact]
+    public void Discount_is_applied_once()
+    {
+        var order = new Order();
+        order.Add(DrinkItem("a", 100m), 1);
+
+        order.ApplyDiscount(10m);
+        order.ApplyDiscount(20m);
+
+        Assert.Equal(80m, order.Total);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(100)]
+    public void Discount_boundaries_are_valid(int percent)
+    {
+        var order = new Order();
+        order.Add(DrinkItem("a", 25m), 1);
+
+        order.ApplyDiscount(percent);
+
+        Assert.Equal(
+            percent == 100 ? 0m : 25m,
+            order.Total);
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(101)]
+    public void Discount_outside_the_allowed_range_is_rejected(int percent)
+    {
+        var order = new Order();
+
+        Assert.Throws<ArgumentOutOfRangeException>(
+            () => order.ApplyDiscount(percent));
+    }
+    
+    [Fact]
+    public void Order_total_uses_decimal_not_double()
+    {
+        var order = new Order();
+        order.Add(DrinkItem("a", 0.10m), 1);
+        order.Add(DrinkItem("b", 0.20m), 1);
+
+        Assert.Equal(0.30m, order.Total);
+    }
+    
 }

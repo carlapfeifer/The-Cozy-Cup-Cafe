@@ -101,4 +101,127 @@ public class ComboTests
 
         Assert.Throws<InvalidOperationException>(() => order.Add(Breakfast(latteAvailable: false), 1));
     }
+
+    [Fact]
+    public void Combo_estimated_preparation_is_the_sum_of_its_parts()
+    {
+        Assert.Equal(7, Breakfast().EstimatedPreparationMinutes);
+    }
+
+    [Fact]
+    public void Large_combo_preparation_switch_is_used()
+    {
+        var drink = new Drink(
+            "d1",
+            "Latte",
+            Coffee,
+            new Money(10m, "RON"),
+            Size.Medium);
+        var food = new Food(
+            "f1",
+            "Croissant",
+            Cakes,
+            new Money(9m, "RON"),
+            Allergen.Gluten);
+        var combo = new Combo(
+            "combo-large",
+            "Large Breakfast",
+            Cakes,
+            new Money(25m, "RON"),
+            new MenuItem[] { drink, food, food });
+
+        Assert.Contains("large combo", new Lab04Wiring().PrepareOrder(combo));
+    }
+    [Fact]
+public void Mapper_round_trips_combo()
+{
+    var coffee = new Category("cof", "Coffee");
+    var pastry = new Category("pas", "Pastries");
+    var mapper = new MenuItemMapper();
+
+    var combo = new Combo(
+        "combo-1",
+        "Breakfast Combo",
+        new Category("combo", "Combos"),
+        new Money(24m, "RON"),
+        new MenuItem[]
+        {
+            new Drink(
+                "cof-1",
+                "Latte",
+                coffee,
+                new Money(14m, "RON"),
+                Size.Medium,
+                Allergen.Milk),
+            new Food(
+                "pas-1",
+                "Croissant",
+                pastry,
+                new Money(8m, "RON"),
+                Allergen.Gluten)
+        },
+        true,
+        true);
+
+    var json = mapper.ToJson(combo);
+    var loaded = Assert.IsType<Combo>(mapper.FromJson(json));
+
+    Assert.Equal(combo.Id, loaded.Id);
+    Assert.Equal(combo.DisplayName, loaded.DisplayName);
+    Assert.True(loaded.IsFeatured);
+    Assert.Equal(2, loaded.Parts.Count);
+}
+
+[Fact]
+public void Mapper_rejects_combo_without_parts()
+{
+    var mapper = new MenuItemMapper();
+
+    var json = """
+    {
+      "id": "combo-empty",
+      "displayName": "Empty Combo",
+      "kind": "combo",
+      "category": { "id": "combo", "name": "Combos" },
+      "price": { "amount": 20, "currency": "RON" },
+      "allergens": [],
+      "isAvailable": true,
+      "parts": []
+    }
+    """;
+
+    Assert.Null(mapper.FromJson(json));
+}
+
+[Fact]
+public void Mapper_rejects_combo_with_invalid_part()
+{
+    var mapper = new MenuItemMapper();
+
+    var json = """
+    {
+      "id": "combo-invalid",
+      "displayName": "Invalid Combo",
+      "kind": "combo",
+      "category": { "id": "combo", "name": "Combos" },
+      "price": { "amount": 20, "currency": "RON" },
+      "allergens": [],
+      "isAvailable": true,
+      "parts": [
+        {
+          "id": "",
+          "displayName": "",
+          "kind": "food",
+          "category": { "id": "pas", "name": "Pastries" },
+          "price": { "amount": 8, "currency": "RON" },
+          "allergens": [],
+          "isAvailable": true
+        }
+      ]
+    }
+    """;
+
+    Assert.Null(mapper.FromJson(json));
+}
+    
 }

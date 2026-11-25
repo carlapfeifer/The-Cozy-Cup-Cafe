@@ -2,10 +2,11 @@ using Capstone.Core;
 using Capstone.Core.Models;
 using Capstone.Core.Wiring;
 using SharpQuest.Contracts;
+using Capstone.Core.Subscribers;
 
 namespace Capstone.Tests;
 
-public class Lab06Tests
+public class MenuEventsAndFunctionsTests
 {
     private static readonly Category Coffee = new("cof", "Coffee");
     private static readonly Category Pastries = new("pas", "Pastries");
@@ -315,4 +316,110 @@ public class Lab06Tests
 
         Assert.Equal(new[] { "p1", "p2" }, kept.Select(i => i.Id));
     }
+    
+    
+    [Fact]
+public void Disposable_item_added_subscription_unsubscribes_and_dispose_is_idempotent()
+{
+    var store = new CafeStore();
+    var observed = 0;
+
+    var subscription = store.SubscribeItemAdded(_ => observed++);
+
+    store.Add(Make("a", "Latte"));
+    subscription.Dispose();
+    subscription.Dispose();
+    store.Add(Make("b", "Mocha"));
+
+    Assert.Equal(1, observed);
+}
+
+[Fact]
+public void MenuChanged_reports_add_update_and_remove()
+{
+    var store = new CafeStore();
+    var changes = new List<string>();
+    store.MenuChanged += (_, change) => changes.Add(change.Change);
+
+    store.Add(Make("a", "Latte"));
+    store.Update(Make("a", "Mocha"));
+    store.Remove("a");
+
+    Assert.Equal(new[] { "Added", "Updated", "Removed" }, changes);
+}
+
+[Fact]
+public void ItemSoldOut_fires_only_when_item_changes_to_unavailable()
+{
+    var store = new CafeStore();
+    var item = Make("a", "Latte");
+    IItem? soldOutItem = null;
+    var eventCount = 0;
+
+    store.Add(item);
+    store.ItemSoldOut += (_, change) =>
+    {
+        eventCount++;
+        soldOutItem = change.Item;
+    };
+
+    Assert.True(store.SetAvailability("a", false));
+    Assert.True(store.SetAvailability("a", false));
+
+    Assert.Equal(1, eventCount);
+    Assert.NotNull(soldOutItem);
+    Assert.Equal("a", soldOutItem.Id);
+}
+
+[Fact]
+public void Completed_order_updates_today_takings_and_sales_log()
+{
+    var store = new CafeStore();
+    var takings = new TodayTakings();
+    var salesLog = new SalesLog();
+
+    using var takingsSubscription = takings.Attach(store);
+    using var salesLogSubscription = salesLog.Attach(store);
+
+    var order = new Order();
+    order.Add((MenuItem)Make("a", "Latte"), 1);
+    var total = new Money(12.50m, "EUR");
+
+    store.NotifyOrderCompleted(order, total, DateTime.Today.AddHours(12));
+
+    Assert.Equal(12.50m, takings.TotalsByCurrency["EUR"]);
+    Assert.Same(order, Assert.Single(salesLog.CompletedOrders).Order);
+}
+
+[Fact]
+public void TodayTakings_keeps_different_currencies_separate()
+{
+    var store = new CafeStore();
+    var takings = new TodayTakings();
+    using var subscription = takings.Attach(store);
+
+    var order = new Order();
+    order.Add((MenuItem)Make("a", "Latte"), 1);
+
+    store.NotifyOrderCompleted(order, new Money(10m, "RON"), DateTime.Today);
+    store.NotifyOrderCompleted(order, new Money(3m, "EUR"), DateTime.Today);
+
+    Assert.Equal(10m, takings.TotalsByCurrency["RON"]);
+    Assert.Equal(3m, takings.TotalsByCurrency["EUR"]);
+}
+
+[Fact]
+public void Order_cannot_add_an_unavailable_item()
+{
+    var unavailableItem = new Drink(
+        "sold-out",
+        "Sold-out latte",
+        Coffee,
+        new Money(12m, "RON"),
+        isAvailable: false);
+    var order = new Order();
+
+    Assert.Throws<InvalidOperationException>(
+        () => order.Add(unavailableItem, 1));
+}
 }

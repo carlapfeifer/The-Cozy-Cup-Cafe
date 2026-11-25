@@ -1,5 +1,8 @@
 namespace Capstone.Core.Models;
 
+using Capstone.Core.Currency;
+
+
 public class Order
 {
     private readonly List<OrderLine> _lines = new();
@@ -11,29 +14,63 @@ public class Order
 
     /// <summary>Discount in percent, from 0 to 100.</summary>
     public decimal DiscountPercent { get; private set; }
-
+    public ServiceMode ServiceMode { get; }
+    
+    public PaymentMethod PaymentMethod { get; }
     public IReadOnlyList<OrderLine> Lines => _lines.ToArray();
 
-    public Order(string currency = "RON", DateTime? placedAt = null)
+    public Order(
+        string currency = "RON", 
+        DateTime? placedAt = null,
+        ServiceMode servicemode = ServiceMode.DineIn,
+        PaymentMethod paymentMethod = PaymentMethod.Cash
+        )
+        
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
         Currency = currency;
         PlacedAt = placedAt ?? DateTime.Now;
+        ServiceMode = servicemode;
+        if (!Enum.IsDefined(paymentMethod))
+            throw new ArgumentOutOfRangeException(nameof(paymentMethod));
+
+        PaymentMethod = paymentMethod;
     }
 
     public void Add(MenuItem item, int quantity)
     {
         ArgumentNullException.ThrowIfNull(item);
 
-        if (item.Price.Currency != Currency)
-            throw new ArgumentException(
-                $"Item is priced in {item.Price.Currency}, but the order is in {Currency}.", nameof(item));
+        ArgumentException.ThrowIfNullOrWhiteSpace(item.Price.Currency);
+
         if (!item.IsAvailable)
             throw new InvalidOperationException($"'{item.DisplayName}' is not available.");
 
+        if (!string.Equals(
+                item.Price.Currency,
+                Currency,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ArgumentException(
+                $"Item is priced in {item.Price.Currency}, but the order is in {Currency}.",
+                nameof(item));
+        }
+        
+
         _lines.Add(new OrderLine(item, quantity));   // rejects a quantity below 1
     }
+    public async Task<Money> ConvertTotalAsync(
+        CurrencyConverter converter,
+        string targetCurrency,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(converter);
 
+        return await converter.ConvertTotalAsync(
+            this,
+            targetCurrency,
+            cancellationToken);
+    }
     public void ApplyDiscount(decimal percent)
     {
         if (percent < 0 || percent > 100)
@@ -46,7 +83,7 @@ public class Order
     public decimal UnitPriceOf(OrderLine line)
     {
         ArgumentNullException.ThrowIfNull(line);
-        return Pricing.FinalPrice(line.Item, TimeOnly.FromDateTime(PlacedAt));
+        return line.Item.FinalPrice(TimeOnly.FromDateTime(PlacedAt));
     }
 
     /// <summary>Sum of all lines at their order-time prices, before the discount. 0 for an empty order.</summary>
@@ -55,4 +92,90 @@ public class Order
     /// <summary>Amount to pay: discount applied, rounded to the cent (half rounds up).</summary>
     public decimal Total =>
         Math.Round(Subtotal * (1 - DiscountPercent / 100m), 2, MidpointRounding.AwayFromZero);
+    
+   public IReadOnlyDictionary<decimal, decimal> VatBreakdown
+{
+    get
+    {
+        var grossByPercent = new Dictionary<decimal, decimal>();
+        var discountMultiplier = 1m - DiscountPercent / 100m;
+
+        foreach (var line in _lines)
+        {
+            if (line.Item is Combo combo)
+            {
+                var partsSubtotal = combo.Parts.Sum(part =>
+                    Pricing.FinalPrice(
+                        part,
+                        TimeOnly.FromDateTime(PlacedAt)));
+
+                if (partsSubtotal == 0m)
+                    continue;
+
+                var comboGross =
+                    UnitPriceOf(line)
+                    * line.Quantity
+                    * discountMultiplier;
+
+                foreach (var part in combo.Parts)
+                {
+                    var partGross =
+                        Pricing.FinalPrice(
+                            part,
+                            TimeOnly.FromDateTime(PlacedAt));
+
+                    var allocatedGross =
+                        comboGross * partGross / partsSubtotal;
+
+                    AddGross(
+                        grossByPercent,
+                        part.Vat.PercentFor(ServiceMode),
+                        allocatedGross);
+                }
+            }
+            else
+            {
+                var gross =
+                    UnitPriceOf(line)
+                    * line.Quantity
+                    * discountMultiplier;
+                
+                AddGross(
+                    grossByPercent,
+                    line.Item.Vat.PercentFor(ServiceMode),
+                    gross);
+            }
+        }
+
+        return grossByPercent.ToDictionary(
+            pair => pair.Key,
+            pair =>
+            {
+                var divisor = 1m + pair.Key / 100m;
+
+                return Math.Round(
+                    pair.Value - pair.Value / divisor,
+                    2,
+                    MidpointRounding.AwayFromZero);
+            });
+    }
+}
+
+public decimal VatTotal =>
+    Math.Round(
+        VatBreakdown.Values.Sum(),
+        2,
+        MidpointRounding.AwayFromZero);
+
+private static void AddGross(
+    IDictionary<decimal, decimal> totals,
+    decimal percent,
+    decimal gross)
+{
+    if (totals.ContainsKey(percent))
+        totals[percent] += gross;
+    else
+        totals[percent] = gross;
+}
+
 }
