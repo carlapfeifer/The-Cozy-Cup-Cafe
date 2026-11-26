@@ -20,11 +20,14 @@ public sealed class Drink : MenuItem
         int preparationTimeMinutes = 5,
         string? sku = null,
         VatInfo? vat = null,
-        bool isDecaf = false)
+        bool isDecaf = false,
+        TimeOnly? availableFrom = null,
+        TimeOnly? availableUntil = null)
         : base(string.IsNullOrWhiteSpace(sku) && sku is not null 
             ? throw new  ArgumentException($"Sku '{sku}' is invalid.", nameof(sku))
             : sku ?? $"DRINK-{id}",
-            id, displayName, category, price, allergens, isAvailable, isFeatured, preparationTimeMinutes,vat)
+            id, displayName, category, price, allergens, isAvailable, isFeatured, preparationTimeMinutes, vat,
+            availableFrom, availableUntil)
     {
         if (!Enum.IsDefined(size))
             throw new ArgumentOutOfRangeException(nameof(size), "Unknown size");
@@ -41,8 +44,10 @@ public sealed class Drink : MenuItem
         $"{Card()} · {Size} drink · {Price.Amount:0.00} {Price.Currency} · {(IsAvailable ? "available" : "unavailable")}";
 
     public override MenuItem WithAvailability(bool isAvailable) =>
-        new Drink(Id, DisplayName, Category, Price, Size, Allergens, isAvailable, IsFeatured, IsHot, PreparationTimeMinutes, Sku, Vat, IsDecaf);
+        new Drink(Id, DisplayName, Category, Price, Size, Allergens, isAvailable, IsFeatured, IsHot,
+            PreparationTimeMinutes, Sku, Vat, IsDecaf, AvailableFrom, AvailableUntil);
 
     public override MenuItem WithPrice(Money price) =>
-        new Drink(Id, DisplayName, Category, price, Size, Allergens, IsAvailable, IsFeatured, IsHot, PreparationTimeMinutes, Sku, Vat, IsDecaf);
+        new Drink(Id, DisplayName, Category, price, Size, Allergens, IsAvailable, IsFeatured, IsHot,
+            PreparationTimeMinutes, Sku, Vat, IsDecaf, AvailableFrom, AvailableUntil);
 }

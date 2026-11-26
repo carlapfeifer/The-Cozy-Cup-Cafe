@@ -29,6 +29,8 @@ public class MenuItemMapper : IItemMapper
         public string? Sku { get; set; }
         public VatDto? Vat { get; set; }
         public List<MenuItemDto>? Parts { get; set; }
+        public string? AvailableFrom { get; set; }
+        public string? AvailableUntil { get; set; }
     }
 
     private sealed class VatDto
@@ -110,6 +112,8 @@ public class MenuItemMapper : IItemMapper
         {
             return null;
         }
+        if (!TryParseAvailabilityWindow(dto.AvailableFrom, dto.AvailableUntil, out var availableFrom, out var availableUntil))
+            return null;
 
         var sku = dto.Sku;
         var category = new Category(
@@ -164,7 +168,9 @@ public class MenuItemMapper : IItemMapper
                 isFeatured,
                 preparationTimeMinutes,
                 sku,
-                vat);
+                vat,
+                availableFrom,
+                availableUntil);
         }
 
         if (kind == "drink" || (kind is null && dto.Size is not null))
@@ -189,7 +195,9 @@ public class MenuItemMapper : IItemMapper
                 preparationTimeMinutes,
                 sku,
                 vat,
-                isDecaf);
+                isDecaf,
+                availableFrom,
+                availableUntil);
         }
 
         if (dto.Size is not null)
@@ -205,7 +213,9 @@ public class MenuItemMapper : IItemMapper
             isFeatured,
             preparationTimeMinutes,
             sku,
-            vat);
+            vat,
+            availableFrom,
+            availableUntil);
     }
 
     private static MenuItemDto CreateDto(MenuItem item)
@@ -240,7 +250,9 @@ public class MenuItemMapper : IItemMapper
                 .ToList(),
             IsAvailable = item.IsAvailable,
             IsFeatured = item.IsFeatured,
-            PreparationTimeMinutes = item.PreparationTimeMinutes
+            PreparationTimeMinutes = item.PreparationTimeMinutes,
+            AvailableFrom = item.AvailableFrom?.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture),
+            AvailableUntil = item.AvailableUntil?.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture)
         };
 
         switch (item)
@@ -287,5 +299,30 @@ public class MenuItemMapper : IItemMapper
         }
 
         return allergens;
+    }
+
+    private static bool TryParseAvailabilityWindow(
+        string? from,
+        string? until,
+        out TimeOnly? availableFrom,
+        out TimeOnly? availableUntil)
+    {
+        availableFrom = null;
+        availableUntil = null;
+        if (from is null && until is null)
+            return true;
+
+        if (from is null
+            || until is null
+            || !TimeOnly.TryParse(from, System.Globalization.CultureInfo.InvariantCulture, out var parsedFrom)
+            || !TimeOnly.TryParse(until, System.Globalization.CultureInfo.InvariantCulture, out var parsedUntil)
+            || parsedFrom == parsedUntil)
+        {
+            return false;
+        }
+
+        availableFrom = parsedFrom;
+        availableUntil = parsedUntil;
+        return true;
     }
 }

@@ -14,8 +14,11 @@ public sealed class Combo : MenuItem
         bool isFeatured = false,
         int preparationTimeMinutes = 5,
         string ? sku = null,
-        VatInfo? vat = null) 
-        : this(id, displayName, category, price, CheckedParts(parts), isAvailable,  isFeatured,  preparationTimeMinutes, sku, vat)
+        VatInfo? vat = null,
+        TimeOnly? availableFrom = null,
+        TimeOnly? availableUntil = null)
+        : this(id, displayName, category, price, CheckedParts(parts), isAvailable, isFeatured,
+            preparationTimeMinutes, sku, vat, availableFrom, availableUntil)
     {
     }
 
@@ -30,14 +33,16 @@ public sealed class Combo : MenuItem
         bool isFeatured = false,
         int preparationTimeMinutes = 5, 
         string ? sku = null,
-        VatInfo? vat = null)
+        VatInfo? vat = null,
+        TimeOnly? availableFrom = null,
+        TimeOnly? availableUntil = null)
         : base(string.IsNullOrWhiteSpace(sku) && sku is not null
             ? throw new ArgumentException($"Sku '{sku}' is invalid.", nameof(sku))
             : sku ?? $"COMBO-{id}",
             id, displayName, category, price,
             parts.Aggregate(Allergen.None, (all, part) => all | part.Allergens),
             isAvailable && parts.All(part => part.IsAvailable),
-            isFeatured,  preparationTimeMinutes,vat)
+            isFeatured, preparationTimeMinutes, vat, availableFrom, availableUntil)
     {
         Parts = parts.AsReadOnly();
     }
@@ -61,9 +66,14 @@ public sealed class Combo : MenuItem
     public override int EstimatedPreparationMinutes =>
         Parts.Sum(part => part.EstimatedPreparationMinutes);
 
+    public override bool IsAvailableAt(TimeOnly time) =>
+        base.IsAvailableAt(time) && Parts.All(part => part.IsAvailableAt(time));
+
     public override MenuItem WithAvailability(bool isAvailable) =>
-        new Combo(Id, DisplayName, Category, Price, Parts, isAvailable, IsFeatured, PreparationTimeMinutes, Sku, Vat);
+        new Combo(Id, DisplayName, Category, Price, Parts, isAvailable, IsFeatured, PreparationTimeMinutes, Sku, Vat,
+            AvailableFrom, AvailableUntil);
 
     public override MenuItem WithPrice(Money price) =>
-        new Combo(Id, DisplayName, Category, price, Parts, IsAvailable, IsFeatured,  PreparationTimeMinutes, Sku, Vat);
+        new Combo(Id, DisplayName, Category, price, Parts, IsAvailable, IsFeatured, PreparationTimeMinutes, Sku, Vat,
+            AvailableFrom, AvailableUntil);
 }

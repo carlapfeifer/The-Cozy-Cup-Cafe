@@ -18,6 +18,8 @@ public abstract class MenuItem : IItem, IPriced
     public int PreparationTimeMinutes { get; }
     public string Sku { get; }   //stock keeping unit - short code for ordering, inventory, receipts 
     public VatInfo Vat { get; }
+    public TimeOnly? AvailableFrom { get; }
+    public TimeOnly? AvailableUntil { get; }
     protected MenuItem(
         string sku,
         string id,
@@ -29,7 +31,9 @@ public abstract class MenuItem : IItem, IPriced
         bool isAvailable = true,
         bool isFeatured = false,
         int preparationTimeMinutes = 5,
-        VatInfo? vat = null
+        VatInfo? vat = null,
+        TimeOnly? availableFrom = null,
+        TimeOnly? availableUntil = null
         )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
@@ -44,6 +48,10 @@ public abstract class MenuItem : IItem, IPriced
         {
             throw new ArgumentOutOfRangeException(nameof(preparationTimeMinutes), "Preparation time must be at least one minute .");
         }
+        if (availableFrom.HasValue != availableUntil.HasValue)
+            throw new ArgumentException("Both availability window times must be provided together.");
+        if (availableFrom == availableUntil && availableFrom.HasValue)
+            throw new ArgumentException("Availability window must have a non-zero duration.");
         
         Sku = sku;
         Id = id;
@@ -56,6 +64,8 @@ public abstract class MenuItem : IItem, IPriced
         IsFeatured = isFeatured;
         PreparationTimeMinutes = preparationTimeMinutes;
         Vat = vat ?? new VatInfo(11m, 11m);
+        AvailableFrom = availableFrom;
+        AvailableUntil = availableUntil;
     }
 
     /// <summary>
@@ -69,6 +79,22 @@ public abstract class MenuItem : IItem, IPriced
 
     public abstract MenuItem WithAvailability(bool isAvailable);
     public abstract MenuItem WithPrice(Money price);
+
+    public virtual bool IsAvailableAt(TimeOnly time)
+    {
+        if (!IsAvailable)
+            return false;
+        if (AvailableFrom is null)
+            return true;
+
+        return AvailableFrom.Value < AvailableUntil!.Value
+            ? time >= AvailableFrom.Value && time < AvailableUntil!.Value
+            : time >= AvailableFrom.Value || time < AvailableUntil!.Value;
+    }
+
+    public string AvailabilityWindow => AvailableFrom is null
+        ? ""
+        : $"{AvailableFrom:HH:mm}–{AvailableUntil:HH:mm}";
     private static readonly TimeOnly HalfPriceFrom = new(18, 0);
 
     public decimal FinalPrice(TimeOnly time)

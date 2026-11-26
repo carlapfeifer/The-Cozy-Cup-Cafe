@@ -448,6 +448,34 @@ public class MenuFileTests : IDisposable
         Assert.Equal(2, Assert.Single(loaded.Orders[0].Lines).Quantity);
     }
 
+    [Fact]
+    public async Task Menu_file_round_trips_item_availability_hours()
+    {
+        var store = SampleMenu();
+        var breakfast = new Combo(
+            "breakfast-window",
+            "Breakfast Combo",
+            Pastries,
+            new Money(18m, "RON"),
+            new MenuItem[]
+            {
+                (MenuItem)store.FindById("c1")!,
+                (MenuItem)store.FindById("p1")!
+            },
+            availableFrom: new TimeOnly(7, 0),
+            availableUntil: new TimeOnly(11, 0));
+        store.Add(breakfast);
+
+        var path = PathFor("scheduled-menu.json");
+        await MenuFile.SaveAsync(store, path, TestContext.Current.CancellationToken);
+        var loaded = Assert.IsType<Combo>(
+            (await MenuFile.LoadAsync(path, TestContext.Current.CancellationToken))
+            .FindById("breakfast-window"));
+
+        Assert.Equal(new TimeOnly(7, 0), loaded.AvailableFrom);
+        Assert.Equal(new TimeOnly(11, 0), loaded.AvailableUntil);
+    }
+
     public void Dispose()
     {
         if (Directory.Exists(_folder))

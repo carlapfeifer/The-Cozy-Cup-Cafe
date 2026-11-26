@@ -26,6 +26,8 @@ public static class CompletedOrderHistoryFile
     {
         public MenuFile.ItemRow? Item { get; set; }
         public int? Quantity { get; set; }
+        public string? Milk { get; set; }
+        public string? Syrup { get; set; }
     }
 
     private static readonly JsonSerializerOptions Options = new()
@@ -59,7 +61,9 @@ public static class CompletedOrderHistoryFile
                     Lines = order.Lines.Select(line => new LineRow
                     {
                         Item = MenuFile.ToRow(line.Item),
-                        Quantity = line.Quantity
+                        Quantity = line.Quantity,
+                        Milk = line.Milk.ToString(),
+                        Syrup = line.Syrup.ToString()
                     }).ToList()
                 })
                 .ToList()
@@ -72,11 +76,19 @@ public static class CompletedOrderHistoryFile
             cancellationToken);
     }
 
+    public static Task<CompletedOrderHistory> LoadAsync(
+        string path,
+        CancellationToken cancellationToken = default) =>
+        LoadAsync(path, null, cancellationToken);
+
     public static async Task<CompletedOrderHistory> LoadAsync(
         string path,
+        int? minimumCapacity,
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
+        if (minimumCapacity is < 1)
+            throw new ArgumentOutOfRangeException(nameof(minimumCapacity));
 
         FileStream stream;
 
@@ -110,7 +122,8 @@ public static class CompletedOrderHistoryFile
                 if (document.FormatVersion != 1 || document.Capacity < 1)
                     throw new InvalidDataException("The order-history file has invalid metadata.");
 
-                var history = new CompletedOrderHistory(document.Capacity);
+                var history = new CompletedOrderHistory(
+                    Math.Max(document.Capacity, minimumCapacity ?? document.Capacity));
 
                 foreach (var savedOrder in document.Orders
                              ?? throw new InvalidDataException("The order-history file has no orders."))
@@ -141,9 +154,23 @@ public static class CompletedOrderHistoryFile
                         if (savedLine.Item is null || savedLine.Quantity is null)
                             throw new InvalidDataException("An order line is missing required data.");
 
+                        var milk = savedLine.Milk is null
+                            ? MilkOption.Regular
+                            : Enum.TryParse<MilkOption>(savedLine.Milk, true, out var parsedMilk)
+                              && Enum.IsDefined(parsedMilk)
+                                ? parsedMilk
+                                : throw new InvalidDataException("An order line has an invalid milk option.");
+                        var syrup = savedLine.Syrup is null
+                            ? SyrupOption.None
+                            : Enum.TryParse<SyrupOption>(savedLine.Syrup, true, out var parsedSyrup)
+                              && Enum.IsDefined(parsedSyrup)
+                                ? parsedSyrup
+                                : throw new InvalidDataException("An order line has an invalid syrup option.");
                         order.Add(
                             MenuFile.FromRow(savedLine.Item),
-                            savedLine.Quantity.Value);
+                            savedLine.Quantity.Value,
+                            milk,
+                            syrup);
                     }
 
                     if (savedOrder.DiscountPercent is not null)

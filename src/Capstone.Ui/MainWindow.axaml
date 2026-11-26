@@ -1,0 +1,489 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Capstone.Core.ViewModels"
+        xmlns:m="using:Capstone.Core.Models"
+        x:Class="Capstone.Ui.MainWindow"
+        x:DataType="vm:CatalogueViewModel"
+        Title="The Cozy Cup Café"
+        Width="1200"
+        Height="820"
+        MinWidth="850"
+        MinHeight="600"
+        Background="#FFF8F0"
+        Foreground="#4E342E">
+
+    <Window.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="#4E342E" />
+        </Style>
+        <Style Selector="Button">
+            <Setter Property="Foreground" Value="#4E342E" />
+            <Setter Property="Background" Value="#E8C9A8" />
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="Foreground" Value="#3E2723" />
+            <Setter Property="Background" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="Foreground" Value="#3E2723" />
+            <Setter Property="Background" Value="#FFFFFF" />
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          ColumnDefinitions="*,*"
+          Margin="20"
+          ColumnSpacing="16"
+          RowSpacing="12">
+
+        <Border Grid.Row="0"
+                Grid.ColumnSpan="2"
+                Padding="16"
+                CornerRadius="10"
+                Background="#F3E2D3">
+            <StackPanel Spacing="10">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <TextBlock Text="The Cozy Cup Café"
+                               FontSize="24"
+                               FontWeight="Bold" />
+                    <TextBlock Text="Staff dashboard"
+                               VerticalAlignment="Center"
+                               Opacity="0.75" />
+                    <TextBlock Text="{Binding CurrentTimeDisplay}"
+                               VerticalAlignment="Center"
+                               FontWeight="SemiBold" />
+                    <Button Content="Main page" Command="{Binding ShowHomeCommand}" />
+                    <Button Content="New order" Command="{Binding ShowOrderCommand}" />
+                    <Button Content="Inventory" Command="{Binding ShowInventoryCommand}" />
+                </StackPanel>
+                <Grid IsVisible="{Binding IsOrderPage}"
+                      ColumnDefinitions="*,*"
+                      ColumnSpacing="16">
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="Recently used"
+                                   FontWeight="Bold" />
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                      VerticalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding RecentlyUsedItems}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="8" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="m:MenuItem">
+                                        <Button Click="AddMenuItem_Click"
+                                                IsEnabled="{Binding IsAvailable}">
+                                            <TextBlock Text="{Binding DisplayName}"
+                                                       TextTrimming="CharacterEllipsis" />
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Most ordered"
+                                   FontWeight="Bold" />
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                      VerticalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding MostOrderedItems}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="8" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="m:MenuItem">
+                                        <Button Click="AddMenuItem_Click"
+                                                IsEnabled="{Binding IsAvailable}">
+                                            <TextBlock Text="{Binding DisplayName}"
+                                                       TextTrimming="CharacterEllipsis" />
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1"
+                Grid.ColumnSpan="2"
+                IsVisible="{Binding IsHomePage}"
+                Padding="32"
+                CornerRadius="12"
+                Background="#FFFCF8"
+                BorderBrush="#D8BFA9"
+                BorderThickness="1">
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="18">
+                <TextBlock Text="Welcome to The Cozy Cup Café"
+                           FontSize="30"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="What would you like to do?"
+                           FontSize="18"
+                           HorizontalAlignment="Center" />
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Spacing="16">
+                    <Button Content="Start a new order"
+                            Padding="24,16"
+                            FontSize="18"
+                            Command="{Binding ShowOrderCommand}" />
+                    <Button Content="Open inventory"
+                            Padding="24,16"
+                            FontSize="18"
+                            Command="{Binding ShowInventoryCommand}" />
+                </StackPanel>
+                <TextBlock Text="{Binding InventoryBusinessDate}"
+                           HorizontalAlignment="Center"
+                           Opacity="0.75" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1"
+                Grid.ColumnSpan="2"
+                IsVisible="{Binding IsInventoryPage}"
+                Padding="20"
+                CornerRadius="8"
+                BorderBrush="#D8BFA9"
+                BorderThickness="1"
+                Background="#FFFCF8">
+            <Grid RowDefinitions="Auto,*" RowSpacing="12">
+                <StackPanel Grid.Row="0" Spacing="4">
+                    <TextBlock Text="Inventory"
+                               FontSize="24"
+                               FontWeight="Bold" />
+                    <TextBlock Text="{Binding InventoryBusinessDate}"
+                               FontWeight="SemiBold" />
+                    <TextBlock Text="Set each item's starting quantity for today. Sold orders reduce the remaining count; counts reset from these starting amounts on the next day."
+                               TextWrapping="Wrap" />
+                </StackPanel>
+                <ScrollViewer Grid.Row="1">
+                    <ItemsControl ItemsSource="{Binding InventoryItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:InventoryItemRow">
+                                <Border Padding="10"
+                                        Margin="2"
+                                        CornerRadius="6"
+                                        Background="#F8EEE4">
+                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto"
+                                          ColumnSpacing="12">
+                                        <StackPanel Grid.Column="0" Spacing="2">
+                                            <TextBlock Text="{Binding DisplayName}"
+                                                       FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding CategoryName}"
+                                                       FontSize="12"
+                                                       Opacity="0.75" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Spacing="2">
+                                            <TextBlock Text="Starting quantity" FontSize="11" />
+                                            <TextBox Width="100"
+                                                     Text="{Binding StartingQuantityInput, Mode=TwoWay}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Spacing="2"
+                                                    VerticalAlignment="Center">
+                                            <TextBlock Text="Remaining" FontSize="11" />
+                                            <TextBlock Text="{Binding RemainingQuantity}"
+                                                       FontWeight="Bold" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="3"
+                                                   Text="{Binding StockStatus}"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#A33A2B" />
+                                        <Button Grid.Column="4"
+                                                Content="Set today's stock"
+                                                VerticalAlignment="Center"
+                                                Click="SaveStartingStock_Click" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1"
+              Grid.Column="0"
+              IsVisible="{Binding IsOrderPage}"
+              RowDefinitions="Auto,Auto,*"
+              RowSpacing="10">
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                <TextBox Grid.Column="0"
+                         PlaceholderText="Search by item or category..."
+                         Text="{Binding Filter, Mode=TwoWay}" />
+                <ComboBox Grid.Column="1"
+                          Width="190"
+                          ItemsSource="{Binding Categories}"
+                          SelectedItem="{Binding CategoryFilter, Mode=TwoWay}" />
+                <Button Grid.Column="2"
+                        Content="Delete selected"
+                        Command="{Binding RemoveCommand}" />
+            </Grid>
+
+            <ScrollViewer Grid.Row="1"
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Disabled"
+                          Margin="0,6,0,0">
+                <ItemsControl ItemsSource="{Binding Categories}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="6" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding .}"
+                                    Click="SelectCategory_Click" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <ScrollViewer Grid.Row="2">
+                <ItemsControl ItemsSource="{Binding MenuSections}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:MenuCategorySection">
+                            <StackPanel Spacing="4" Margin="0,0,0,10">
+                                <TextBlock Text="{Binding Name}"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           Margin="4" />
+                                <ItemsControl ItemsSource="{Binding Items}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="m:MenuItem">
+                                            <Border Padding="6"
+                                                    Margin="2"
+                                                    CornerRadius="6"
+                                                    Background="#F8EEE4">
+                                                <Grid ColumnDefinitions="*,Auto,Auto"
+                                                      RowDefinitions="Auto"
+                                                      ColumnSpacing="8">
+                                                    <StackPanel Grid.Row="0"
+                                                                Grid.Column="0"
+                                                                Spacing="2">
+                                                        <TextBlock Text="{Binding DisplayName}"
+                                                                   FontWeight="SemiBold" />
+                                                        <TextBlock Text="{Binding Allergens, StringFormat='Allergens: {0}'}"
+                                                                   FontSize="12"
+                                                                   Opacity="0.8" />
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Row="0"
+                                                                Grid.Column="1"
+                                                                Spacing="2"
+                                                                HorizontalAlignment="Right"
+                                                                VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Price.Amount, StringFormat='{}{0:0.00}'}"
+                                                                   FontWeight="Bold"
+                                                                   HorizontalAlignment="Right" />
+                                                        <TextBlock Text="{Binding IsAvailable, StringFormat='Available: {0}'}"
+                                                                   FontSize="12"
+                                                                   HorizontalAlignment="Right" />
+                                                        <TextBlock Text="{Binding AvailabilityWindow}"
+                                                                   FontSize="11"
+                                                                   HorizontalAlignment="Right" />
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="2"
+                                                                Orientation="Horizontal"
+                                                                Spacing="4"
+                                                                VerticalAlignment="Center">
+                                                        <Button Content="Details"
+                                                                Click="SelectMenuItem_Click" />
+                                                        <Button Content="Add"
+                                                                Click="AddMenuItem_Click"
+                                                                IsEnabled="{Binding IsAvailable}" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+        </Grid>
+
+        <Border Grid.Row="1"
+                Grid.Column="1"
+                IsVisible="{Binding IsOrderPage}"
+                Padding="16"
+                BorderThickness="1"
+                CornerRadius="8"
+                BorderBrush="#D8BFA9"
+                Background="#FFFCF8">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto,Auto,Auto,Auto"
+                  RowSpacing="8">
+                <StackPanel Grid.Row="0" Spacing="8">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="{Binding Selected.DisplayName}"
+                                   FontSize="21"
+                                   FontWeight="Bold" />
+                        <TextBlock Text="{Binding DetailsCategory}"
+                                   FontSize="13"
+                                   Opacity="0.75" />
+                    </StackPanel>
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                        <Border Grid.Row="0" Grid.Column="0" Padding="8" CornerRadius="6" Background="#F3E2D3">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="PRICE" FontSize="10" FontWeight="Bold" />
+                                <TextBlock Text="{Binding DetailsPrice}" FontSize="17" FontWeight="Bold" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="1" Padding="8" CornerRadius="6" Background="#F3E2D3">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="AVAILABILITY" FontSize="10" FontWeight="Bold" />
+                                <TextBlock Text="{Binding DetailsAvailability}" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Row="1" Grid.ColumnSpan="2" Padding="8" CornerRadius="6" Background="#F8EEE4">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="ALLERGENS" FontSize="10" FontWeight="Bold" />
+                                <TextBlock Text="{Binding DetailsAllergens}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Row="2" Grid.ColumnSpan="2" Padding="8" CornerRadius="6" Background="#FFF1D6">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="INVENTORY" FontSize="10" FontWeight="Bold" />
+                                <TextBlock Text="{Binding DetailsStockStatus}" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    <Expander Header="More item details">
+                        <TextBlock Text="{Binding DetailsMore}"
+                                   Margin="6"
+                                   TextWrapping="Wrap"
+                                   FontSize="12" />
+                    </Expander>
+                    <Button Content="Add selected item to order"
+                            HorizontalAlignment="Left"
+                            Command="{Binding AddToOrderCommand}"
+                            CommandParameter="{Binding Selected}" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+                    <TextBox Width="90"
+                             PlaceholderText="Discount %"
+                             Text="{Binding DiscountInput, Mode=TwoWay}" />
+                    <Button Content="Apply discount"
+                            Command="{Binding ApplyDiscountCommand}" />
+                    <TextBlock Text="{Binding AppliedDiscountPercent, StringFormat='{}{0:0.#}% off'}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Preview conversion"
+                               VerticalAlignment="Center" />
+                    <ComboBox Width="90"
+                              ItemsSource="{Binding SupportedCurrencies}"
+                              SelectedItem="{Binding TargetCurrency, Mode=TwoWay}" />
+                    <Button Content="Convert total"
+                            Command="{Binding ConvertOrderCommand}" />
+                    <TextBlock Text="{Binding ConvertedOrderDisplay}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="3"
+                            Orientation="Horizontal"
+                            Spacing="8">
+                    <TextBlock Text="Order type"
+                               VerticalAlignment="Center" />
+                    <ComboBox Width="130"
+                              ItemsSource="{Binding ServiceModes}"
+                              SelectedItem="{Binding SelectedServiceMode, Mode=TwoWay}" />
+                    <TextBlock Text="Payment"
+                               VerticalAlignment="Center" />
+                    <ComboBox Width="145"
+                              ItemsSource="{Binding PaymentMethods}"
+                              SelectedItem="{Binding SelectedPaymentMethod, Mode=TwoWay}" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="4" Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Current order"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center" />
+                    <Button Content="Remove line"
+                            Command="{Binding RemoveOrderLineCommand}" />
+                    <Button Content="Remove one"
+                            Command="{Binding RemoveOneOrderItemCommand}" />
+                </StackPanel>
+
+                <ListBox Grid.Row="5"
+                         ItemsSource="{Binding OrderLines}"
+                         SelectedItem="{Binding SelectedOrderLine, Mode=TwoWay}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="m:OrderLine">
+                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="4">
+                                <TextBlock Text="{Binding Quantity, StringFormat='{}{0}x'}" />
+                                <TextBlock Text="{Binding Item.DisplayName}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <StackPanel Grid.Row="6"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Spacing="8">
+                    <TextBlock Text="{Binding OrderCurrency}"
+                               VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding OrderTotal, StringFormat='{}{0:0.00}'}"
+                               FontSize="20"
+                               FontWeight="Bold" />
+                </StackPanel>
+
+                <TextBlock Grid.Row="7"
+                           Text="{Binding OrderVatTotal, StringFormat='VAT included: {0:0.00}'}"
+                           HorizontalAlignment="Right"
+                           FontWeight="SemiBold" />
+
+                <Border Grid.Row="8"
+                        Padding="10"
+                        BorderThickness="1"
+                        CornerRadius="6">
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Receipt preview" FontWeight="Bold" />
+                        <ScrollViewer MaxHeight="130">
+                            <TextBlock Text="{Binding ReceiptPreview}"
+                                       FontFamily="monospace"
+                                       FontSize="12" />
+                        </ScrollViewer>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Row="9" Spacing="5">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Pay in"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold" />
+                        <ComboBox Width="110"
+                                  ItemsSource="{Binding SupportedCurrencies}"
+                                  SelectedItem="{Binding PaymentCurrency, Mode=TwoWay}" />
+                        <Button Content="Checkout &amp; take payment"
+                                Command="{Binding CheckoutCommand}" />
+                    </StackPanel>
+                    <Button Content="End of day — save &amp; export"
+                            Command="{Binding CompleteOrderCommand}" />
+                    <TextBlock Text="{Binding OperationMessage}"
+                               TextWrapping="Wrap"
+                               FontSize="12" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <TextBlock Grid.Row="2"
+                   Grid.ColumnSpan="2"
+                   IsVisible="{Binding IsOrderPage}"
+                   Text="{Binding Count, StringFormat='{}{0} menu items showing'}"
+                   HorizontalAlignment="Right" />
+    </Grid>
+</Window>

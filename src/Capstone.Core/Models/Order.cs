@@ -14,9 +14,9 @@ public class Order
 
     /// <summary>Discount in percent, from 0 to 100.</summary>
     public decimal DiscountPercent { get; private set; }
-    public ServiceMode ServiceMode { get; }
+    public ServiceMode ServiceMode { get; private set; }
     
-    public PaymentMethod PaymentMethod { get; }
+    public PaymentMethod PaymentMethod { get; private set; }
     public IReadOnlyList<OrderLine> Lines => _lines.ToArray();
 
     public Order(
@@ -37,28 +37,70 @@ public class Order
         PaymentMethod = paymentMethod;
     }
 
-    public void Add(MenuItem item, int quantity)
+    public void Add(
+        MenuItem item,
+        int quantity,
+        MilkOption milk = MilkOption.Regular,
+        SyrupOption syrup = SyrupOption.None)
     {
         ArgumentNullException.ThrowIfNull(item);
-
         ArgumentException.ThrowIfNullOrWhiteSpace(item.Price.Currency);
 
-        if (!item.IsAvailable)
+        if (!item.IsAvailableAt(TimeOnly.FromDateTime(PlacedAt)))
             throw new InvalidOperationException($"'{item.DisplayName}' is not available.");
 
-        if (!string.Equals(
-                item.Price.Currency,
-                Currency,
-                StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(item.Price.Currency, Currency, StringComparison.OrdinalIgnoreCase))
         {
             throw new ArgumentException(
                 $"Item is priced in {item.Price.Currency}, but the order is in {Currency}.",
                 nameof(item));
         }
-        
 
-        _lines.Add(new OrderLine(item, quantity));   // rejects a quantity below 1
+        var existingIndex = _lines.FindIndex(line =>
+            line.Item.Id == item.Id && line.Milk == milk && line.Syrup == syrup);
+        if (existingIndex >= 0)
+        {
+            var existingLine = _lines[existingIndex];
+            _lines[existingIndex] = new OrderLine(
+                existingLine.Item,
+                checked(existingLine.Quantity + quantity),
+                milk,
+                syrup);
+            return;
+        }
+
+        _lines.Add(new OrderLine(item, quantity, milk, syrup));
     }
+    
+    public bool RemoveLine(string itemId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(itemId);
+
+        var index = _lines.FindIndex(line => line.Item.Id == itemId);
+        if (index < 0)
+            return false;
+
+        _lines.RemoveAt(index);
+        return true;
+    }
+    public bool RemoveOneFromLine(string itemId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(itemId);
+
+        var index = _lines.FindIndex(line => line.Item.Id == itemId);
+        if (index < 0)
+            return false;
+
+        var line = _lines[index];
+
+        if (line.Quantity == 1)
+            _lines.RemoveAt(index);
+        else
+            _lines[index] = new OrderLine(line.Item, line.Quantity - 1);
+
+        return true;
+    }
+    
     public async Task<Money> ConvertTotalAsync(
         CurrencyConverter converter,
         string targetCurrency,
@@ -79,11 +121,23 @@ public class Order
         DiscountPercent = percent;
     }
 
+    public void SetServiceDetails(ServiceMode serviceMode, PaymentMethod paymentMethod)
+    {
+        if (!Enum.IsDefined(serviceMode))
+            throw new ArgumentOutOfRangeException(nameof(serviceMode));
+        if (!Enum.IsDefined(paymentMethod))
+            throw new ArgumentOutOfRangeException(nameof(paymentMethod));
+
+        ServiceMode = serviceMode;
+        PaymentMethod = paymentMethod;
+    }
+
     /// <summary>The price of one unit of this line at the time of the order (size and time rules applied).</summary>
     public decimal UnitPriceOf(OrderLine line)
     {
         ArgumentNullException.ThrowIfNull(line);
-        return line.Item.FinalPrice(TimeOnly.FromDateTime(PlacedAt));
+        return line.Item.FinalPrice(TimeOnly.FromDateTime(PlacedAt))
+               + line.CustomizationSurcharge;
     }
 
     /// <summary>Sum of all lines at their order-time prices, before the discount. 0 for an empty order.</summary>

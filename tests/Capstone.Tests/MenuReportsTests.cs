@@ -1,5 +1,6 @@
 using Capstone.Core;
 using Capstone.Core.Models;
+using Capstone.Core.Storage;
 
 namespace Capstone.Tests;
 
@@ -106,6 +107,36 @@ public class MenuReportsTests
         Assert.Equal(0, MenuReports.BestSellerPerCategory(none).Count);
         Assert.Equal(0, MenuReports.RevenueByHour(none).Count);
         Assert.Equal(Menu.Length, MenuReports.NeverOrdered(Menu, none).Count);
+    }
+
+    [Fact]
+    public void End_of_day_report_summarizes_daily_revenue_and_best_sellers()
+    {
+        var report = CafeReportFormatter.FormatEndOfDay(
+            Day(),
+            new DateOnly(2026, 11, 19));
+
+        Assert.Contains("Completed orders: 4", report);
+        Assert.Contains("Items sold: 10", report);
+        Assert.Contains("Total revenue: 103.10 RON", report);
+        Assert.Contains("Average order: 25.78 RON", report);
+        Assert.Contains("MOST ORDERED ITEMS", report);
+        Assert.Contains("Croissant: 4 sold", report);
+        Assert.Contains("REVENUE BY PAYMENT METHOD", report);
+        Assert.Contains("REVENUE BY HOUR", report);
+        Assert.Contains("09:00 — 69.00 RON", report);
+    }
+
+    [Fact]
+    public void End_of_day_report_does_not_count_other_business_dates()
+    {
+        var report = CafeReportFormatter.FormatEndOfDay(
+            Day(),
+            new DateOnly(2026, 11, 20));
+
+        Assert.Contains("Completed orders: 0", report);
+        Assert.Contains("No items sold.", report);
+        Assert.DoesNotContain("Total revenue:", report);
     }
 
     [Fact]

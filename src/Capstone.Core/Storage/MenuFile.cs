@@ -46,6 +46,8 @@ public static class MenuFile
         public bool? IsHot { get; set; }
         public bool? IsDecaf { get; set; }
         public int? PreparationTimeMinutes { get; set; }
+        public string? AvailableFrom { get; set; }
+        public string? AvailableUntil { get; set; }
         
         public decimal? CategoryVatPercent { get; set; }
         public string? CategoryIcon { get; set; }
@@ -185,6 +187,8 @@ public static async Task<IItemStore> LoadAsync(
             CategoryDisplayColor = menuItem.Category.DisplayColor,
             DineInVatPercent = menuItem.Vat.DineInPercent,
             TakeawayVatPercent = menuItem.Vat.TakeawayPercent,
+            AvailableFrom = menuItem.AvailableFrom?.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture),
+            AvailableUntil = menuItem.AvailableUntil?.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture),
         };
 
         switch (menuItem)
@@ -237,6 +241,8 @@ public static async Task<IItemStore> LoadAsync(
         var featured = row.IsFeatured ?? false;
         var sku = row.Sku;
         var preparationTimeMinutes = row.PreparationTimeMinutes ?? 5;
+        if (!TryParseAvailabilityWindow(row.AvailableFrom, row.AvailableUntil, out var availableFrom, out var availableUntil))
+            throw new InvalidDataException("A row has an invalid availability window.");
 
         switch (row.Kind)
         {
@@ -260,7 +266,9 @@ public static async Task<IItemStore> LoadAsync(
                     preparationTimeMinutes,
                     sku,
                     vat,
-                    row.IsDecaf ?? false
+                    row.IsDecaf ?? false,
+                    availableFrom,
+                    availableUntil
                     );
 
             case "food":
@@ -273,7 +281,9 @@ public static async Task<IItemStore> LoadAsync(
                     available,
                     featured,
                     preparationTimeMinutes,
-                    sku,vat);
+                    sku,vat,
+                    availableFrom,
+                    availableUntil);
 
             case "combo":
                 if (row.Parts is not { Count: > 0 })
@@ -290,7 +300,9 @@ public static async Task<IItemStore> LoadAsync(
                     available,
                     featured,
                     preparationTimeMinutes,
-                    sku,vat);
+                    sku,vat,
+                    availableFrom,
+                    availableUntil);
 
             default:
                 throw new InvalidDataException($"'{row.Kind}' is not a kind of menu item.");
@@ -302,6 +314,31 @@ public static async Task<IItemStore> LoadAsync(
             .Where(a => a != Allergen.None && allergens.HasFlag(a))
             .Select(a => a.ToString())
             .ToList();
+
+    private static bool TryParseAvailabilityWindow(
+        string? from,
+        string? until,
+        out TimeOnly? availableFrom,
+        out TimeOnly? availableUntil)
+    {
+        availableFrom = null;
+        availableUntil = null;
+        if (from is null && until is null)
+            return true;
+
+        if (from is null
+            || until is null
+            || !TimeOnly.TryParse(from, System.Globalization.CultureInfo.InvariantCulture, out var parsedFrom)
+            || !TimeOnly.TryParse(until, System.Globalization.CultureInfo.InvariantCulture, out var parsedUntil)
+            || parsedFrom == parsedUntil)
+        {
+            return false;
+        }
+
+        availableFrom = parsedFrom;
+        availableUntil = parsedUntil;
+        return true;
+    }
 
     internal static Allergen ParseAllergens(List<string>? names)
     {

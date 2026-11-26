@@ -103,6 +103,45 @@ public class ComboTests
     }
 
     [Fact]
+    public void Breakfast_combo_is_available_from_open_until_eleven()
+    {
+        var combo = new Combo(
+            "breakfast-window",
+            "Breakfast Combo",
+            Cakes,
+            new Money(18m, "RON"),
+            Breakfast().Parts,
+            availableFrom: new TimeOnly(7, 0),
+            availableUntil: new TimeOnly(11, 0));
+
+        Assert.False(combo.IsAvailableAt(new TimeOnly(6, 59)));
+        Assert.True(combo.IsAvailableAt(new TimeOnly(7, 0)));
+        Assert.True(combo.IsAvailableAt(new TimeOnly(10, 59)));
+        Assert.False(combo.IsAvailableAt(new TimeOnly(11, 0)));
+        Assert.Throws<InvalidOperationException>(() =>
+            new Order(placedAt: new DateTime(2026, 10, 23, 11, 0, 0)).Add(combo, 1));
+    }
+
+    [Fact]
+    public void Mapper_preserves_combo_availability_hours()
+    {
+        var combo = new Combo(
+            "breakfast-window",
+            "Breakfast Combo",
+            Cakes,
+            new Money(18m, "RON"),
+            Breakfast().Parts,
+            availableFrom: new TimeOnly(7, 0),
+            availableUntil: new TimeOnly(11, 0));
+        var mapper = new MenuItemMapper();
+
+        var loaded = Assert.IsType<Combo>(mapper.FromJson(mapper.ToJson(combo)));
+
+        Assert.Equal(new TimeOnly(7, 0), loaded.AvailableFrom);
+        Assert.Equal(new TimeOnly(11, 0), loaded.AvailableUntil);
+    }
+
+    [Fact]
     public void Combo_estimated_preparation_is_the_sum_of_its_parts()
     {
         Assert.Equal(7, Breakfast().EstimatedPreparationMinutes);
