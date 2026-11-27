@@ -28,6 +28,8 @@ public static class CompletedOrderHistoryFile
         public int? Quantity { get; set; }
         public string? Milk { get; set; }
         public string? Syrup { get; set; }
+        public string? Sugar { get; set; }
+        public string? Bread { get; set; }
     }
 
     private static readonly JsonSerializerOptions Options = new()
@@ -63,7 +65,9 @@ public static class CompletedOrderHistoryFile
                         Item = MenuFile.ToRow(line.Item),
                         Quantity = line.Quantity,
                         Milk = line.Milk.ToString(),
-                        Syrup = line.Syrup.ToString()
+                        Syrup = line.Syrup.ToString(),
+                        Sugar = line.Sugar.ToString(),
+                        Bread = line.Bread.ToString()
                     }).ToList()
                 })
                 .ToList()
@@ -166,11 +170,25 @@ public static class CompletedOrderHistoryFile
                               && Enum.IsDefined(parsedSyrup)
                                 ? parsedSyrup
                                 : throw new InvalidDataException("An order line has an invalid syrup option.");
+                        var sugar = savedLine.Sugar is null
+                            ? SugarOption.None
+                            : Enum.TryParse<SugarOption>(savedLine.Sugar, true, out var parsedSugar)
+                              && Enum.IsDefined(parsedSugar)
+                                ? parsedSugar
+                                : SugarOption.None;
+                        var bread = savedLine.Bread is null
+                            ? BreadOption.Standard
+                            : Enum.TryParse<BreadOption>(savedLine.Bread, true, out var parsedBread)
+                              && Enum.IsDefined(parsedBread)
+                                ? parsedBread
+                                : BreadOption.Standard;
                         order.Add(
                             MenuFile.FromRow(savedLine.Item),
                             savedLine.Quantity.Value,
                             milk,
-                            syrup);
+                            syrup,
+                            sugar,
+                            bread);
                     }
 
                     if (savedOrder.DiscountPercent is not null)

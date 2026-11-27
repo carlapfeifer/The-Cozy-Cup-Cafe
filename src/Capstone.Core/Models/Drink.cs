@@ -22,12 +22,14 @@ public sealed class Drink : MenuItem
         VatInfo? vat = null,
         bool isDecaf = false,
         TimeOnly? availableFrom = null,
-        TimeOnly? availableUntil = null)
+        TimeOnly? availableUntil = null,
+        IEnumerable<string>? ingredients = null,
+        ItemOrigin origin = ItemOrigin.MadeInHouse)
         : base(string.IsNullOrWhiteSpace(sku) && sku is not null 
             ? throw new  ArgumentException($"Sku '{sku}' is invalid.", nameof(sku))
             : sku ?? $"DRINK-{id}",
             id, displayName, category, price, allergens, isAvailable, isFeatured, preparationTimeMinutes, vat,
-            availableFrom, availableUntil)
+            availableFrom, availableUntil, ingredients, origin)
     {
         if (!Enum.IsDefined(size))
             throw new ArgumentOutOfRangeException(nameof(size), "Unknown size");
@@ -45,9 +47,9 @@ public sealed class Drink : MenuItem
 
     public override MenuItem WithAvailability(bool isAvailable) =>
         new Drink(Id, DisplayName, Category, Price, Size, Allergens, isAvailable, IsFeatured, IsHot,
-            PreparationTimeMinutes, Sku, Vat, IsDecaf, AvailableFrom, AvailableUntil);
+            PreparationTimeMinutes, Sku, Vat, IsDecaf, AvailableFrom, AvailableUntil, Ingredients, Origin);
 
     public override MenuItem WithPrice(Money price) =>
         new Drink(Id, DisplayName, Category, price, Size, Allergens, IsAvailable, IsFeatured, IsHot,
-            PreparationTimeMinutes, Sku, Vat, IsDecaf, AvailableFrom, AvailableUntil);
+            PreparationTimeMinutes, Sku, Vat, IsDecaf, AvailableFrom, AvailableUntil, Ingredients, Origin);
 }

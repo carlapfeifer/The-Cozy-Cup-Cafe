@@ -15,6 +15,9 @@ public sealed class InventoryItemRow(MenuItem item, int startingQuantity) : INot
     public MenuItem Item { get; } = item;
     public string DisplayName => Item.DisplayName;
     public string CategoryName => Item.Category.Name;
+    public string Sku => Item.Sku;
+    public ItemOrigin Origin => Item.Origin;
+    public string OriginDisplay => Origin == ItemOrigin.SupplierBought ? "Supplier Bought" : "Made in House";
 
     public string StartingQuantityInput
     {

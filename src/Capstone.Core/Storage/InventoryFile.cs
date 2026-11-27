@@ -51,7 +51,8 @@ public static class InventoryFile
         {
             if (!saved.TryGetValue(item.Id, out var level))
             {
-                level = new InventoryStockLevel(DefaultStartingQuantity, DefaultStartingQuantity);
+                var starting = item.IsAvailable ? DefaultStartingQuantity : 0;
+                level = new InventoryStockLevel(starting, starting);
             }
             else if (level.StartingQuantity < 0 || level.RemainingQuantity < 0
                      || level.RemainingQuantity > level.StartingQuantity)
@@ -61,6 +62,11 @@ public static class InventoryFile
             else if (isNewBusinessDay)
             {
                 level = level with { RemainingQuantity = level.StartingQuantity };
+            }
+
+            if (!item.IsAvailable && level.RemainingQuantity > 0)
+            {
+                level = new InventoryStockLevel(0, 0);
             }
 
             levels.Add(item.Id, level);

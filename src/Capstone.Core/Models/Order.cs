@@ -41,7 +41,9 @@ public class Order
         MenuItem item,
         int quantity,
         MilkOption milk = MilkOption.Regular,
-        SyrupOption syrup = SyrupOption.None)
+        SyrupOption syrup = SyrupOption.None,
+        SugarOption sugar = SugarOption.None,
+        BreadOption bread = BreadOption.Standard)
     {
         ArgumentNullException.ThrowIfNull(item);
         ArgumentException.ThrowIfNullOrWhiteSpace(item.Price.Currency);
@@ -57,7 +59,7 @@ public class Order
         }
 
         var existingIndex = _lines.FindIndex(line =>
-            line.Item.Id == item.Id && line.Milk == milk && line.Syrup == syrup);
+            line.Item.Id == item.Id && line.Milk == milk && line.Syrup == syrup && line.Sugar == sugar && line.Bread == bread);
         if (existingIndex >= 0)
         {
             var existingLine = _lines[existingIndex];
@@ -65,11 +67,13 @@ public class Order
                 existingLine.Item,
                 checked(existingLine.Quantity + quantity),
                 milk,
-                syrup);
+                syrup,
+                sugar,
+                bread);
             return;
         }
 
-        _lines.Add(new OrderLine(item, quantity, milk, syrup));
+        _lines.Add(new OrderLine(item, quantity, milk, syrup, sugar, bread));
     }
     
     public bool RemoveLine(string itemId)
@@ -83,6 +87,13 @@ public class Order
         _lines.RemoveAt(index);
         return true;
     }
+
+    public bool RemoveLine(OrderLine line)
+    {
+        ArgumentNullException.ThrowIfNull(line);
+        return _lines.Remove(line);
+    }
+
     public bool RemoveOneFromLine(string itemId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(itemId);
@@ -96,7 +107,23 @@ public class Order
         if (line.Quantity == 1)
             _lines.RemoveAt(index);
         else
-            _lines[index] = new OrderLine(line.Item, line.Quantity - 1);
+            _lines[index] = new OrderLine(line.Item, line.Quantity - 1, line.Milk, line.Syrup, line.Sugar, line.Bread);
+
+        return true;
+    }
+
+    public bool RemoveOneFromLine(OrderLine line)
+    {
+        ArgumentNullException.ThrowIfNull(line);
+
+        var index = _lines.IndexOf(line);
+        if (index < 0)
+            return false;
+
+        if (line.Quantity == 1)
+            _lines.RemoveAt(index);
+        else
+            _lines[index] = new OrderLine(line.Item, line.Quantity - 1, line.Milk, line.Syrup, line.Sugar, line.Bread);
 
         return true;
     }

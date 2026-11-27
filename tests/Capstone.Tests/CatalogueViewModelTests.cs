@@ -349,6 +349,308 @@ public class CatalogueViewModelTests
         Assert.Equal("Available now · 11:00–15:00", viewModel.DetailsAvailability);
     }
 
+    [Fact]
+    public void Adding_drink_with_milk_and_syrup_customizations_applies_surcharges_and_tracks_details()
+    {
+        var store = new Lab09Wiring().CreateStore();
+        var coffeeCategory = new Category("cof", "Coffee");
+        var latte = new Drink("latte-cust", "Latte", coffeeCategory, new Money(12m, "RON"), allergens: Allergen.Milk);
+        store.Add(latte);
+
+        var viewModel = new CatalogueViewModel(store, new FakeRates(1m));
+        viewModel.Selected = latte;
+        Assert.True(viewModel.CanCustomizeSelected);
+        Assert.True(viewModel.CanCustomizeMilk);
+        Assert.True(viewModel.CanCustomizeSyrup);
+
+        viewModel.SelectedMilkOption = MilkOption.Oat;
+        viewModel.SelectedSyrupOption = SyrupOption.Vanilla;
+
+        viewModel.AddToOrderCommand.Execute(latte);
+
+        var line = Assert.Single(viewModel.OrderLines);
+        Assert.Equal(MilkOption.Oat, line.Milk);
+        Assert.Equal(SyrupOption.Vanilla, line.Syrup);
+        Assert.Equal("Oat milk, Vanilla syrup", line.CustomizationSummary);
+        // 12 base + 2 oat milk + 3 vanilla syrup = 17 RON
+        Assert.Equal(17m, viewModel.OrderTotal);
+    }
+
+    [Fact]
+    public void Attempting_to_add_unavailable_combo_selects_it_and_shows_explanation()
+    {
+        var store = new Lab09Wiring().CreateStore();
+        var part = new Food("part-1", "Pastry", new Category("pas", "Pastries"), new Money(5m, "RON"), isAvailable: false);
+        var combo = new Combo(
+            "combo-test",
+            "Morning Combo",
+            new Category("combo", "Combos"),
+            new Money(15m, "RON"),
+            [part]);
+        store.Add(combo);
+
+        var viewModel = new CatalogueViewModel(store, new FakeRates(1m));
+        Assert.Null(viewModel.Selected);
+
+        viewModel.AddItemToOrder(combo);
+
+        Assert.Same(combo, viewModel.Selected);
+        Assert.Contains("unavailable because ingredient 'Pastry' is sold out", viewModel.OperationMessage);
+    }
+
+    [Fact]
+    public async Task Changing_stock_level_to_zero_marks_item_sold_out_and_restocking_marks_it_available()
+    {
+        var store = new Lab09Wiring().CreateStore();
+        var item = new Food("cookie-1", "Chocolate Cookie", new Category("pas", "Pastries"), new Money(6m, "RON"));
+        store.Add(item);
+
+        var folder = Path.Combine(Path.GetTempPath(), "cozycup-" + Guid.NewGuid().ToString("N"));
+        var inventoryPath = Path.Combine(folder, "inventory.json");
+
+        try
+        {
+            var viewModel = new CatalogueViewModel(
+                store,
+                new FakeRates(1m),
+                Path.Combine(folder, "orders.json"),
+                Path.Combine(folder, "reports"),
+                inventoryPath);
+
+            var row = Assert.Single(viewModel.InventoryItems, entry => entry.Item.Id == item.Id);
+            
+            // Set stock to 0
+            row.StartingQuantityInput = "0";
+            var saveCommand = (AsyncRelayCommand)viewModel.SaveStartingStockCommand;
+            saveCommand.Execute(row);
+            await WaitForCommandAsync(saveCommand);
+
+            var updatedItem = store.FindById(item.Id) as MenuItem;
+            Assert.NotNull(updatedItem);
+            Assert.False(updatedItem.IsAvailable);
+
+            // Re-stock item to 5
+            row.StartingQuantityInput = "5";
+            saveCommand.Execute(row);
+            await WaitForCommandAsync(saveCommand);
+
+            var restockedItem = store.FindById(item.Id) as MenuItem;
+            Assert.NotNull(restockedItem);
+            Assert.True(restockedItem.IsAvailable);
+        }
+        finally
+        {
+            if (Directory.Exists(folder))
+                Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Bread_and_sugar_options_are_correctly_offered_and_added_to_order()
+    {
+        var store = new Lab09Wiring().CreateStore();
+        var sandwich = new Food(
+            "san-1",
+            "Ham Sandwich",
+            new Category("san", "Sandwiches"),
+            new Money(20m, "RON"),
+            allergens: Allergen.Gluten);
+        var coffee = new Drink(
+            "cof-black",
+            "Black Coffee",
+            new Category("cof", "Coffee"),
+            new Money(10m, "RON"),
+            allergens: Allergen.None);
+        store.Add(sandwich);
+        store.Add(coffee);
+
+        var viewModel = new CatalogueViewModel(store, new FakeRates(1m));
+
+        // Test sandwich
+        viewModel.Selected = sandwich;
+        Assert.False(viewModel.CanCustomizeMilk);
+        Assert.False(viewModel.CanCustomizeSugar);
+        Assert.True(viewModel.CanCustomizeBread);
+
+        viewModel.SelectedBreadOption = BreadOption.Sourdough;
+        viewModel.AddToOrderCommand.Execute(sandwich);
+
+        var sandwichLine = Assert.Single(viewModel.OrderLines);
+        Assert.Equal(BreadOption.Sourdough, sandwichLine.Bread);
+        Assert.Equal("Sourdough bread", sandwichLine.CustomizationSummary);
+
+        // Test coffee with sugar
+        viewModel.Selected = coffee;
+        Assert.False(viewModel.CanCustomizeMilk); // no milk allergen
+        Assert.True(viewModel.CanCustomizeSugar);
+        Assert.False(viewModel.CanCustomizeBread);
+
+        viewModel.SelectedSugarOption = SugarOption.Brown;
+        viewModel.AddToOrderCommand.Execute(coffee);
+
+        var coffeeLine = viewModel.OrderLines.Single(l => l.Item.Id == coffee.Id);
+        Assert.Equal(SugarOption.Brown, coffeeLine.Sugar);
+        Assert.Equal(MilkOption.Regular, coffeeLine.Milk);
+        Assert.Equal("Brown sugar", coffeeLine.CustomizationSummary);
+    }
+
+    [Fact]
+    public void Items_with_availability_false_load_with_zero_inventory_and_sold_out_status()
+    {
+        var store = new Lab09Wiring().CreateStore();
+        var unavailableDrink = new Drink(
+            "unavail-1",
+            "Special Tea",
+            new Category("tea", "Tea"),
+            new Money(8m, "RON"),
+            isAvailable: false);
+        store.Add(unavailableDrink);
+
+        var folder = Path.Combine(Path.GetTempPath(), "cozycup-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var viewModel = new CatalogueViewModel(
+                store,
+                new FakeRates(1m),
+                Path.Combine(folder, "orders.json"),
+                Path.Combine(folder, "reports"),
+                Path.Combine(folder, "inventory.json"));
+
+            var row = Assert.Single(viewModel.InventoryItems, entry => entry.Item.Id == unavailableDrink.Id);
+            Assert.Equal("0", row.StartingQuantityInput);
+            Assert.Equal(0, row.RemainingQuantity);
+            Assert.Equal("SOLD OUT", row.StockStatus);
+        }
+        finally
+        {
+            if (Directory.Exists(folder))
+                Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Ingredients_are_displayed_and_enable_milk_options_for_milk_ingredients()
+    {
+        var store = new Lab09Wiring().CreateStore();
+        var coffeeCategory = new Category("cof", "Coffee");
+        var latte = new Drink(
+            "latte-ing",
+            "Latte",
+            coffeeCategory,
+            new Money(14m, "RON"),
+            ingredients: ["Espresso", "Steamed Milk"]);
+        var espresso = new Drink(
+            "esp-ing",
+            "Espresso",
+            coffeeCategory,
+            new Money(9m, "RON"),
+            ingredients: ["Espresso Roast Coffee Beans", "Filtered Water"]);
+
+        store.Add(latte);
+        store.Add(espresso);
+
+        var viewModel = new CatalogueViewModel(store, new FakeRates(1m));
+
+        // Latte has milk in ingredients
+        viewModel.Selected = latte;
+        Assert.Equal("Espresso, Steamed Milk", viewModel.DetailsIngredients);
+        Assert.True(viewModel.CanCustomizeMilk);
+
+        // Espresso has no milk allergen and no milk in ingredients
+        viewModel.Selected = espresso;
+        Assert.Equal("Espresso Roast Coffee Beans, Filtered Water", viewModel.DetailsIngredients);
+        Assert.False(viewModel.CanCustomizeMilk);
+    }
+
+    [Fact]
+    public void HoneyOptionAndSkuSearchAndInventorySkuWork()
+    {
+        var store = new Lab09Wiring().CreateStore();
+        var coffeeCategory = new Category("cof", "Coffee");
+        var tea = new Drink(
+            "tea-01",
+            "Green Tea",
+            coffeeCategory,
+            new Money(8m, "RON"),
+            ingredients: ["Green Tea Leaves", "Filtered Water"]);
+        store.Add(tea);
+
+        var viewModel = new CatalogueViewModel(store, new FakeRates(1m));
+        viewModel.Selected = tea;
+        Assert.False(viewModel.CanCustomizeMilk);
+        Assert.True(viewModel.CanCustomizeSugar);
+
+        // Test Honey sugar option
+        viewModel.SelectedSugarOption = SugarOption.Honey;
+        viewModel.AddToOrderCommand.Execute(tea);
+
+        var line = Assert.Single(viewModel.OrderLines);
+        Assert.Equal(SugarOption.Honey, line.Sugar);
+        Assert.Equal("Honey", line.CustomizationSummary);
+
+        // Test Search by SKU
+        viewModel.Filter = "tea-01";
+        Assert.Contains(viewModel.Items, i => i.Id == tea.Id);
+
+        viewModel.Filter = "non-existent-sku";
+        Assert.DoesNotContain(viewModel.Items, i => i.Id == tea.Id);
+
+        // Test Inventory row SKU
+        var invRow = Assert.Single(viewModel.InventoryItems, r => r.Item.Id == tea.Id);
+        Assert.Equal(tea.Sku, invRow.Sku);
+        Assert.Equal("DRINK-tea-01", invRow.Sku);
+    }
+
+    [Fact]
+    public void SupplierBoughtItems_CannotCustomizeMilkOrBread_AndBreakfastAvailabilityWindow()
+    {
+        var store = new Lab09Wiring().CreateStore();
+        var pastryCategory = new Category("pas", "Pastries");
+        var breakfastCategory = new Category("breakfast", "Breakfast");
+
+        var supplierCroissant = new Food(
+            "croissant-sup",
+            "Butter Croissant",
+            pastryCategory,
+            new Money(8.5m, "RON"),
+            allergens: Allergen.Gluten | Allergen.Milk,
+            ingredients: ["Wheat Flour", "Butter", "Milk"],
+            origin: ItemOrigin.SupplierBought);
+
+        var breakfastToast = new Food(
+            "toast-house",
+            "Egg and Avocado Toast",
+            breakfastCategory,
+            new Money(22.9m, "RON"),
+            allergens: Allergen.Gluten,
+            availableFrom: new TimeOnly(7, 0),
+            availableUntil: new TimeOnly(11, 0),
+            ingredients: ["Sourdough Toast Bread", "Avocado", "Eggs"],
+            origin: ItemOrigin.MadeInHouse);
+
+        store.Add(supplierCroissant);
+        store.Add(breakfastToast);
+
+        var viewModel = new CatalogueViewModel(store, new FakeRates(1m));
+
+        // Supplier bought item has milk & bread ingredients, but because it's supplier bought:
+        viewModel.Selected = supplierCroissant;
+        Assert.Equal("Supplier Bought", viewModel.DetailsOrigin);
+        Assert.False(viewModel.CanCustomizeMilk);
+        Assert.False(viewModel.CanCustomizeBread);
+
+        // In-house breakfast toast allows bread customization and has breakfast combo availability
+        viewModel.Selected = breakfastToast;
+        Assert.Equal("Made in House", viewModel.DetailsOrigin);
+        Assert.True(viewModel.CanCustomizeBread);
+        Assert.Equal("07:00–11:00", breakfastToast.AvailabilityWindow);
+
+        // Inventory row exposes Origin
+        var croissantRow = Assert.Single(viewModel.InventoryItems, r => r.Item.Id == supplierCroissant.Id);
+        Assert.Equal(ItemOrigin.SupplierBought, croissantRow.Origin);
+        Assert.Equal("Supplier Bought", croissantRow.OriginDisplay);
+    }
+
     private static async Task WaitForCommandAsync(AsyncRelayCommand command)
     {
         var timeout = DateTime.UtcNow.AddSeconds(5);

@@ -42,6 +42,7 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
     private readonly RelayCommand _selectCategoryCommand;
     private string _filter = "";
     private string _categoryFilter = "All categories";
+    private string _originFilter = "All";
     private IItem? _selected;
     private Order _order = new("RON");
     private readonly ObservableCollection<OrderLine> _orderLines = [];
@@ -64,6 +65,102 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
     private DateTime _currentTime = DateTime.Now;
     private string _currentPage = "Home";
     private bool _currentOrderStockCommitted;
+
+    private MilkOption _selectedMilkOption = MilkOption.Regular;
+    private SyrupOption _selectedSyrupOption = SyrupOption.None;
+    private SugarOption _selectedSugarOption = SugarOption.None;
+    private BreadOption _selectedBreadOption = BreadOption.Standard;
+
+    public IReadOnlyList<MilkOption> AvailableMilkOptions { get; } = Enum.GetValues<MilkOption>();
+    public IReadOnlyList<SyrupOption> AvailableSyrupOptions { get; } = Enum.GetValues<SyrupOption>();
+    public IReadOnlyList<SugarOption> AvailableSugarOptions { get; } = Enum.GetValues<SugarOption>();
+    public IReadOnlyList<BreadOption> AvailableBreadOptions { get; } = Enum.GetValues<BreadOption>();
+
+    public MilkOption SelectedMilkOption
+    {
+        get => _selectedMilkOption;
+        set
+        {
+            if (_selectedMilkOption == value)
+                return;
+            _selectedMilkOption = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public SyrupOption SelectedSyrupOption
+    {
+        get => _selectedSyrupOption;
+        set
+        {
+            if (_selectedSyrupOption == value)
+                return;
+            _selectedSyrupOption = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public SugarOption SelectedSugarOption
+    {
+        get => _selectedSugarOption;
+        set
+        {
+            if (_selectedSugarOption == value)
+                return;
+            _selectedSugarOption = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public BreadOption SelectedBreadOption
+    {
+        get => _selectedBreadOption;
+        set
+        {
+            if (_selectedBreadOption == value)
+                return;
+            _selectedBreadOption = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool CanCustomizeSelected => CanCustomizeMilk || CanCustomizeSyrup || CanCustomizeSugar || CanCustomizeBread;
+
+    public bool CanCustomizeMilk => Selected is MenuItem item
+        && item.Origin != ItemOrigin.SupplierBought
+        && ((item.Ingredients.Any(i => i.Contains("milk", StringComparison.OrdinalIgnoreCase)
+                                   || i.Contains("dairy", StringComparison.OrdinalIgnoreCase)
+                                   || i.Contains("cream", StringComparison.OrdinalIgnoreCase)))
+            || (item.Ingredients.Count == 0 && item.Allergens.HasFlag(Allergen.Milk)));
+
+    public bool CanCustomizeSyrup => Selected is Drink;
+
+    public bool CanCustomizeSugar => Selected is Drink;
+
+    public bool CanCustomizeBread => Selected is MenuItem item
+        && item.Origin != ItemOrigin.SupplierBought
+        && IsBreadItem(item);
+
+    private static bool IsBreadItem(MenuItem item)
+    {
+        if (item is Combo combo)
+            return combo.Parts.Any(IsBreadItem);
+
+        var name = item.DisplayName;
+        var category = item.Category.Name;
+
+        return name.Contains("sandwich", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("toast", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("bagel", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("panini", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("wrap", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("bread", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("croissant", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("roll", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("scone", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("bun", StringComparison.OrdinalIgnoreCase)
+            || category.Contains("sandwich", StringComparison.OrdinalIgnoreCase);
+    }
 
     public CatalogueViewModel(
         IItemStore store,
@@ -143,7 +240,9 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
             parameter =>
             {
                 if (parameter is MenuItem item)
-                    AddItemToOrder(item);
+                {
+                    AddItemToOrder(item, SelectedMilkOption, SelectedSyrupOption, SelectedSugarOption, SelectedBreadOption);
+                }
             },
             parameter => parameter is MenuItem);
         _removeOrderLineCommand = new RelayCommand(
@@ -162,6 +261,8 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
 
         _store.ItemAdded += OnItemAdded;
         _store.ItemRemoved += OnItemRemoved;
+        _store.ItemUpdated += OnItemUpdated;
+        _store.AvailabilityChanged += OnItemAvailabilityChanged;
 
         foreach (var item in _store.All())
         {
@@ -238,6 +339,23 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
     public System.Windows.Input.ICommand SelectCategoryCommand =>
         _selectCategoryCommand;
 
+    public IReadOnlyList<string> OriginFilters { get; } = ["All", "Made in House", "Supplier Bought"];
+
+    public string OriginFilter
+    {
+        get => _originFilter;
+        set
+        {
+            var next = string.IsNullOrWhiteSpace(value) ? "All" : value;
+            if (_originFilter == next)
+                return;
+
+            _originFilter = next;
+            OnPropertyChanged();
+            Refill();
+        }
+    }
+
     public string CategoryFilter
     {
         get => _categoryFilter;
@@ -263,12 +381,19 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
 
             _selected = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(CanCustomizeSelected));
+            OnPropertyChanged(nameof(CanCustomizeMilk));
+            OnPropertyChanged(nameof(CanCustomizeSyrup));
+            OnPropertyChanged(nameof(CanCustomizeSugar));
+            OnPropertyChanged(nameof(CanCustomizeBread));
             OnPropertyChanged(nameof(Details));
             OnPropertyChanged(nameof(DetailsCategory));
+            OnPropertyChanged(nameof(DetailsOrigin));
             OnPropertyChanged(nameof(DetailsPrice));
             OnPropertyChanged(nameof(DetailsAvailability));
             OnPropertyChanged(nameof(DetailsStockStatus));
             OnPropertyChanged(nameof(DetailsAllergens));
+            OnPropertyChanged(nameof(DetailsIngredients));
             OnPropertyChanged(nameof(DetailsMore));
             _removeCommand.RaiseCanExecuteChanged();
         }
@@ -283,6 +408,10 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
     public string DetailsCategory => Selected is MenuItem item
         ? item.Category.Name
         : "Choose a menu item";
+
+    public string DetailsOrigin => Selected is MenuItem item
+        ? item.Origin == ItemOrigin.SupplierBought ? "Supplier Bought" : "Made in House"
+        : "—";
 
     public string DetailsPrice => Selected is MenuItem item
         ? item.FinalPrice(TimeOnly.FromDateTime(_currentTime)) == item.Price.Amount
@@ -310,11 +439,19 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
         ? item.Allergens == Allergen.None ? "None" : item.Allergens.ToString()
         : "—";
 
+    public string DetailsIngredients => Selected is MenuItem item && item.Ingredients.Count > 0
+        ? string.Join(", ", item.Ingredients)
+        : "None specified";
+
     public string DetailsMore => Selected is MenuItem item
         ? string.Join(Environment.NewLine, new[]
         {
             $"SKU: {item.Sku}",
+            $"Origin: {(item.Origin == ItemOrigin.SupplierBought ? "Supplier Bought" : "Made in House")}",
             $"Preparation: {item.PreparationTimeMinutes} min",
+            item.Ingredients.Count > 0
+                ? $"Ingredients: {string.Join(", ", item.Ingredients)}"
+                : null,
             item.AvailabilityWindow.Length > 0
                 ? $"Available hours: {item.AvailabilityWindow}"
                 : null,
@@ -334,9 +471,11 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
         {
             item.DisplayName,
             $"Category: {item.Category.Name}",
+            $"Origin: {(item.Origin == ItemOrigin.SupplierBought ? "Supplier Bought" : "Made in House")}",
             $"Price: {item.Price.Amount:0.00} {item.Price.Currency}",
             $"Availability: {(item.IsAvailable ? "Available" : "Sold out")}",
             $"Allergens: {(item.Allergens == Allergen.None ? "None" : item.Allergens.ToString())}",
+            $"Ingredients: {(item.Ingredients.Count > 0 ? string.Join(", ", item.Ingredients) : "None specified")}",
             $"SKU: {item.Sku}",
             $"Preparation: {item.PreparationTimeMinutes} min"
         };
@@ -534,7 +673,18 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
     public string InventoryBusinessDate =>
         $"Starting stock for {_businessDate:dddd, MMMM d}";
 
-    public void AddItemToOrder(MenuItem item)
+    public void AddItemToOrder(MenuItem item) =>
+        AddItemToOrder(item, MilkOption.Regular, SyrupOption.None, SugarOption.None, BreadOption.Standard);
+
+    public void AddItemToOrder(MenuItem item, MilkOption milk, SyrupOption syrup) =>
+        AddItemToOrder(item, milk, syrup, SugarOption.None, BreadOption.Standard);
+
+    public void AddItemToOrder(
+        MenuItem item,
+        MilkOption milk,
+        SyrupOption syrup,
+        SugarOption sugar,
+        BreadOption bread)
     {
         ArgumentNullException.ThrowIfNull(item);
         if (_currentOrderStockCommitted)
@@ -543,14 +693,40 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
             return;
         }
 
+        if (item is Combo combo)
+        {
+            if (!combo.IsAvailable || !combo.IsAvailableAt(TimeOnly.FromDateTime(_currentTime)))
+            {
+                Selected = combo;
+                var unavailablePart = combo.Parts.FirstOrDefault(p => !p.IsAvailable);
+                if (unavailablePart is not null)
+                {
+                    OperationMessage = $"{combo.DisplayName} is unavailable because ingredient '{unavailablePart.DisplayName}' is sold out.";
+                }
+                else if (!combo.IsAvailableAt(TimeOnly.FromDateTime(_currentTime)))
+                {
+                    OperationMessage = combo.AvailabilityWindow.Length == 0
+                        ? $"{combo.DisplayName} is unavailable."
+                        : $"{combo.DisplayName} is not available now. Available {combo.AvailabilityWindow}.";
+                }
+                else
+                {
+                    OperationMessage = $"{combo.DisplayName} is unavailable.";
+                }
+                return;
+            }
+        }
+
         if (!item.IsAvailable)
         {
+            Selected = item;
             OperationMessage = $"{item.DisplayName} is sold out.";
             return;
         }
 
         if (!item.IsAvailableAt(TimeOnly.FromDateTime(_currentTime)))
         {
+            Selected = item;
             OperationMessage = item.AvailabilityWindow.Length == 0
                 ? $"{item.DisplayName} is unavailable."
                 : $"{item.DisplayName} is not available now. Available {item.AvailabilityWindow}.";
@@ -559,6 +735,7 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
 
         if (AvailableStock(item) <= 0)
         {
+            Selected = item;
             OperationMessage = $"{item.DisplayName} is sold out for today.";
             RefreshInventoryRows();
             return;
@@ -573,18 +750,33 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
         if (_orderLines.Count == 0)
             _order = CreateNewOrder(_currentTime);
 
-        _order.Add(item, 1);
+        var actualMilk = CanCustomizeMilk ? milk : MilkOption.Regular;
+        var actualSyrup = item is Drink ? syrup : SyrupOption.None;
+        var actualSugar = item is Drink ? sugar : SugarOption.None;
+        var actualBread = (item.Origin != ItemOrigin.SupplierBought && IsBreadItem(item)) ? bread : BreadOption.Standard;
+
+        _order.Add(item, 1, actualMilk, actualSyrup, actualSugar, actualBread);
         _reservedQuantities[item.Id] = _reservedQuantities.GetValueOrDefault(item.Id) + 1;
         _lastCompletedReceipt = null;
         _orderCounts[item.Id] = _orderCounts.GetValueOrDefault(item.Id) + 1;
         _recentlyUsed.Push(item);
         RefreshRecentlyUsedItems();
 
-        var updatedLine = _order.Lines.Single(line => line.Item.Id == item.Id);
+        var updatedLine = _order.Lines.First(line =>
+            line.Item.Id == item.Id
+            && line.Milk == actualMilk
+            && line.Syrup == actualSyrup
+            && line.Sugar == actualSugar
+            && line.Bread == actualBread);
+
         var displayedIndex = -1;
         for (var index = 0; index < _orderLines.Count; index++)
         {
-            if (_orderLines[index].Item.Id == item.Id)
+            if (_orderLines[index].Item.Id == item.Id
+                && _orderLines[index].Milk == actualMilk
+                && _orderLines[index].Syrup == actualSyrup
+                && _orderLines[index].Sugar == actualSugar
+                && _orderLines[index].Bread == actualBread)
             {
                 displayedIndex = index;
                 break;
@@ -614,7 +806,8 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
         RefreshMostOrderedItems();
         if (item is MenuItem menuItem && !_inventoryLevels.ContainsKey(menuItem.Id))
         {
-            var level = new InventoryStockLevel(20, 20);
+            var starting = menuItem.IsAvailable ? 20 : 0;
+            var level = new InventoryStockLevel(starting, starting);
             _inventoryLevels.Add(menuItem.Id, level);
             var row = new InventoryItemRow(menuItem, level.StartingQuantity);
             row.UpdateStock(level.RemainingQuantity, level.StartingQuantity);
@@ -666,7 +859,7 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
         if (SelectedOrderLine is not { } line)
             return;
 
-        _order.RemoveLine(line.Item.Id);
+        _order.RemoveLine(line);
         ReleaseReservedStock(line.Item.Id, line.Quantity);
         _orderLines.Remove(line);
         SelectedOrderLine = null;
@@ -717,8 +910,11 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
         var textMatches =
             string.IsNullOrWhiteSpace(_filter)
             || item.DisplayName.Contains(_filter, StringComparison.OrdinalIgnoreCase)
-            || item is MenuItem menuItem
-            && menuItem.Category.Name.Contains(_filter, StringComparison.OrdinalIgnoreCase);
+            || (item is MenuItem menuItem
+                && (menuItem.Category.Name.Contains(_filter, StringComparison.OrdinalIgnoreCase)
+                    || menuItem.Sku.Contains(_filter, StringComparison.OrdinalIgnoreCase)
+                    || (menuItem.Origin == ItemOrigin.SupplierBought && "supplier bought".Contains(_filter, StringComparison.OrdinalIgnoreCase))
+                    || (menuItem.Origin == ItemOrigin.MadeInHouse && "made in house".Contains(_filter, StringComparison.OrdinalIgnoreCase))));
 
         var categoryMatches =
             _categoryFilter == "All categories"
@@ -728,28 +924,29 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
                 _categoryFilter,
                 StringComparison.OrdinalIgnoreCase);
 
-        return textMatches && categoryMatches;
+        var originMatches =
+            _originFilter == "All"
+            || (item is MenuItem originItem && (
+                (_originFilter == "Made in House" && originItem.Origin == ItemOrigin.MadeInHouse) ||
+                (_originFilter == "Supplier Bought" && originItem.Origin == ItemOrigin.SupplierBought)));
+
+        return textMatches && categoryMatches && originMatches;
     }
     private void RemoveOneFromSelectedOrderLine()
     {
         if (SelectedOrderLine is not { } selected)
             return;
 
-        var index = -1;
-        for (var i = 0; i < _orderLines.Count; i++)
-        {
-            if (_orderLines[i].Item.Id == selected.Item.Id)
-            {
-                index = i;
-                break;
-            }
-        }
-
-        if (index < 0 || !_order.RemoveOneFromLine(selected.Item.Id))
+        var index = _orderLines.IndexOf(selected);
+        if (index < 0 || !_order.RemoveOneFromLine(selected))
             return;
 
         var updatedLine = _order.Lines.FirstOrDefault(
-            line => line.Item.Id == selected.Item.Id);
+            line => line.Item.Id == selected.Item.Id
+                && line.Milk == selected.Milk
+                && line.Syrup == selected.Syrup
+                && line.Sugar == selected.Sugar
+                && line.Bread == selected.Bread);
 
         if (updatedLine is null)
         {
@@ -956,7 +1153,9 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
         };
         await InventoryFile.SaveAsync(_inventoryPath, _businessDate, updated);
         _inventoryLevels[row.Item.Id] = next;
+        _store.SetAvailability(row.Item.Id, quantity > 0);
         RefreshInventoryRows();
+        RefreshMenuSections();
         RaiseOrderCommandsCanExecuteChanged();
         OperationMessage = $"Starting stock for {row.Item.DisplayName} set to {quantity}.";
     }
@@ -974,10 +1173,13 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
                 throw new InvalidOperationException(
                     $"Not enough {line.Item.DisplayName} remains in inventory to complete this order.");
 
+            var remaining = level.RemainingQuantity - line.Quantity;
             updated[line.Item.Id] = level with
             {
-                RemainingQuantity = level.RemainingQuantity - line.Quantity
+                RemainingQuantity = remaining
             };
+            if (remaining == 0)
+                _store.SetAvailability(line.Item.Id, false);
         }
 
         await InventoryFile.SaveAsync(_inventoryPath, _businessDate, updated);
@@ -986,6 +1188,7 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
         _reservedQuantities.Clear();
         _currentOrderStockCommitted = true;
         RefreshInventoryRows();
+        RefreshMenuSections();
     }
 
     private Order CreateNewOrder(DateTime? placedAt = null)
@@ -1046,12 +1249,16 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
     private void RefreshMenuSections()
     {
         _menuSections.Clear();
-        foreach (var categoryGroup in _items
-                     .OfType<MenuItem>()
+
+        var menuItems = _items.OfType<MenuItem>().ToList();
+        var availableItems = menuItems.Where(item => item.IsAvailable && AvailableStock(item) > 0).ToList();
+        var soldOutItems = menuItems.Where(item => !item.IsAvailable || AvailableStock(item) <= 0).ToList();
+
+        foreach (var categoryGroup in availableItems
                      .GroupBy(item => item.Category.Name, StringComparer.OrdinalIgnoreCase)
                      .OrderBy(group => group.Key, StringComparer.OrdinalIgnoreCase))
         {
-            var section = new MenuCategorySection(categoryGroup.Key);
+            var section = new MenuCategorySection(categoryGroup.Key, isSoldOutSection: false);
             foreach (var item in categoryGroup.OrderBy(
                          item => item.DisplayName,
                          StringComparer.OrdinalIgnoreCase))
@@ -1061,6 +1268,29 @@ public sealed class CatalogueViewModel : ICatalogueViewModel
 
             _menuSections.Add(section);
         }
+
+        if (soldOutItems.Count > 0)
+        {
+            var soldOutSection = new MenuCategorySection("Sold Out", isSoldOutSection: true);
+            foreach (var item in soldOutItems.OrderBy(
+                         item => item.DisplayName,
+                         StringComparer.OrdinalIgnoreCase))
+            {
+                soldOutSection.Items.Add(item);
+            }
+
+            _menuSections.Add(soldOutSection);
+        }
+    }
+
+    private void OnItemAvailabilityChanged(object? sender, AvailabilityChangedChange e)
+    {
+        Refill();
+    }
+
+    private void OnItemUpdated(object? sender, ItemUpdatedChange e)
+    {
+        Refill();
     }
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>

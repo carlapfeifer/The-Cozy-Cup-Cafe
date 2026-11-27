@@ -135,7 +135,35 @@ public class CafeStore : IItemStore, IEnumerable<IItem>
             new AvailabilityChangedChange(updatedItem, menuItem.IsAvailable, updatedItem.IsAvailable));
         if (!updatedItem.IsAvailable)
             ItemSoldOut?.Invoke(this, new ItemSoldOutChange(updatedItem));
+
+        // When a part's availability changes, update combos that include this part
+        UpdateCombosDependentOn(id);
+
         return true;
+    }
+
+    private void UpdateCombosDependentOn(string partId)
+    {
+        var combos = _items.OfType<Combo>()
+            .Where(c => c.Parts.Any(p => p.Id == partId))
+            .ToList();
+
+        foreach (var combo in combos)
+        {
+            var updatedParts = combo.Parts
+                .Select(p => p.Id == partId ? (_byId.TryGetValue(partId, out var fresh) && fresh is MenuItem mi ? mi : p) : p)
+                .ToList();
+            var newCombo = combo.WithParts(updatedParts);
+            if (newCombo.IsAvailable != combo.IsAvailable)
+            {
+                Update(newCombo);
+                AvailabilityChanged?.Invoke(
+                    this,
+                    new AvailabilityChangedChange(newCombo, combo.IsAvailable, newCombo.IsAvailable));
+                if (!newCombo.IsAvailable)
+                    ItemSoldOut?.Invoke(this, new ItemSoldOutChange(newCombo));
+            }
+        }
     }
 
     public bool SetPrice(string id, Money price)

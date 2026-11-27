@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using Capstone.Core.Wiring;
 using System.Text.Json;
 using Capstone.Core.Models;
+using Capstone.Core.ViewModels;
 
 namespace Capstone.Ui;
 
@@ -39,9 +40,18 @@ public partial class App : Application
                 entryIndex++;
             }
 
+            var completedOrdersPath = Path.Combine(AppContext.BaseDirectory, "completed-orders.json");
+            var reportsDir = Path.Combine(AppContext.BaseDirectory, "Reports");
+            var inventoryPath = Path.Combine(AppContext.BaseDirectory, "inventory.json");
+
             desktop.MainWindow = new MainWindow
             {
-                DataContext = wiring.CreateViewModel(store)
+                DataContext = new CatalogueViewModel(
+                    store,
+                    exchangeRateProvider: null,
+                    completedOrdersPath: completedOrdersPath,
+                    reportsDirectory: reportsDir,
+                    inventoryPath: inventoryPath)
             };
         }
 

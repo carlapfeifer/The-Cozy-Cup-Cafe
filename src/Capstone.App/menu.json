@@ -3,341 +3,955 @@
     "id": "cof-001",
     "sku": "COF-LAT-L",
     "displayName": "Latte",
-    "category": { "id": "cof", "name": "Coffee", "vatPercent": 11, "icon": "coffee", "displayColor": "#6F4E37" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 14.50, "currency": "RON" },
+    "category": {
+      "id": "cof",
+      "name": "Coffee",
+      "vatPercent": 11,
+      "icon": "coffee",
+      "displayColor": "#6F4E37"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 14.5,
+      "currency": "RON"
+    },
     "size": "Large",
-    "allergens": ["Milk"],
+    "allergens": [
+      "Milk"
+    ],
     "isAvailable": true,
     "isHot": true,
-    "isFeatured": true
+    "isFeatured": true,
+    "ingredients": [
+      "Espresso",
+      "Steamed Milk",
+      "Milk Foam"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "cof-002",
     "sku": "COF-ESP-S",
     "displayName": "Espresso",
-    "category": { "id": "cof", "name": "Coffee", "vatPercent": 11, "icon": "coffee", "displayColor": "#6F4E37" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 9.25, "currency": "RON" },
+    "category": {
+      "id": "cof",
+      "name": "Coffee",
+      "vatPercent": 11,
+      "icon": "coffee",
+      "displayColor": "#6F4E37"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 9.25,
+      "currency": "RON"
+    },
     "size": "Small",
     "allergens": [],
     "isAvailable": true,
-    "isHot": true
+    "isHot": true,
+    "ingredients": [
+      "Espresso Roast Coffee Beans",
+      "Filtered Water"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "cof-003",
     "sku": "COF-MOCH-M",
     "displayName": "Mocha",
-    "category": { "id": "cof", "name": "Coffee", "vatPercent": 11, "icon": "coffee", "displayColor": "#6F4E37" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 16.49, "currency": "RON" },
+    "category": {
+      "id": "cof",
+      "name": "Coffee",
+      "vatPercent": 11,
+      "icon": "coffee",
+      "displayColor": "#6F4E37"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 16.49,
+      "currency": "RON"
+    },
     "size": "Medium",
-    "allergens": ["Milk"],
+    "allergens": [
+      "Milk"
+    ],
     "isAvailable": true,
-    "isHot": true
+    "isHot": true,
+    "ingredients": [
+      "Espresso",
+      "Dark Chocolate Sauce",
+      "Steamed Milk",
+      "Whipped Cream"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "cof-004",
     "sku": "COF-CAP-M",
     "displayName": "Cappuccino",
-    "category": { "id": "cof", "name": "Coffee", "vatPercent": 11, "icon": "coffee", "displayColor": "#6F4E37" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 13.75, "currency": "RON" },
+    "category": {
+      "id": "cof",
+      "name": "Coffee",
+      "vatPercent": 11,
+      "icon": "coffee",
+      "displayColor": "#6F4E37"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 13.75,
+      "currency": "RON"
+    },
     "size": "Medium",
-    "allergens": ["Milk"],
+    "allergens": [
+      "Milk"
+    ],
     "isAvailable": true,
-    "isHot": true
+    "isHot": true,
+    "ingredients": [
+      "Espresso",
+      "Steamed Milk",
+      "Dense Milk Foam",
+      "Cocoa Powder"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "cof-005",
     "sku": "COF-AMER-L",
     "displayName": "Americano",
-    "category": { "id": "cof", "name": "Coffee", "vatPercent": 11, "icon": "coffee", "displayColor": "#6F4E37" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 11.20, "currency": "RON" },
+    "category": {
+      "id": "cof",
+      "name": "Coffee",
+      "vatPercent": 11,
+      "icon": "coffee",
+      "displayColor": "#6F4E37"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 11.2,
+      "currency": "RON"
+    },
     "size": "Large",
     "allergens": [],
     "isAvailable": true,
-    "isHot": true
+    "isHot": true,
+    "ingredients": [
+      "Espresso",
+      "Hot Water"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "cof-006",
     "sku": "COF-FLAT-M",
     "displayName": "Flat White",
-    "category": { "id": "cof", "name": "Coffee", "vatPercent": 11, "icon": "coffee", "displayColor": "#6F4E37" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 15.25, "currency": "RON" },
+    "category": {
+      "id": "cof",
+      "name": "Coffee",
+      "vatPercent": 11,
+      "icon": "coffee",
+      "displayColor": "#6F4E37"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 15.25,
+      "currency": "RON"
+    },
     "size": "Medium",
-    "allergens": ["Milk"],
+    "allergens": [
+      "Milk"
+    ],
     "isAvailable": true,
-    "isHot": true
+    "isHot": true,
+    "ingredients": [
+      "Double Ristretto",
+      "Steamed Whole Milk"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "tea-001",
     "sku": "TEA-MINT-M",
     "displayName": "Mint Tea",
-    "category": { "id": "tea", "name": "Tea", "vatPercent": 11, "icon": "tea", "displayColor": "#78A37D" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 10.50, "currency": "RON" },
+    "category": {
+      "id": "tea",
+      "name": "Tea",
+      "vatPercent": 11,
+      "icon": "tea",
+      "displayColor": "#78A37D"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 10.5,
+      "currency": "RON"
+    },
     "size": "Medium",
     "allergens": [],
     "isAvailable": true,
-    "isHot": true
+    "isHot": true,
+    "ingredients": [
+      "Peppermint Leaves",
+      "Spearmint",
+      "Hot Water"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "tea-002",
     "sku": "TEA-ENG-L",
     "displayName": "English Breakfast",
-    "category": { "id": "tea", "name": "Tea", "vatPercent": 11, "icon": "tea", "displayColor": "#78A37D" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 11.25, "currency": "RON" },
+    "category": {
+      "id": "tea",
+      "name": "Tea",
+      "vatPercent": 11,
+      "icon": "tea",
+      "displayColor": "#78A37D"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 11.25,
+      "currency": "RON"
+    },
     "size": "Large",
-    "allergens": ["Milk"],
+    "allergens": [
+      "Milk"
+    ],
     "isAvailable": true,
-    "isHot": true
+    "isHot": true,
+    "ingredients": [
+      "Black Tea Leaves",
+      "Hot Water",
+      "Splash of Milk"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "tea-003",
     "sku": "TEA-GREEN-M",
     "displayName": "Green Tea",
-    "category": { "id": "tea", "name": "Tea", "vatPercent": 11, "icon": "tea", "displayColor": "#78A37D" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 10.49, "currency": "RON" },
+    "category": {
+      "id": "tea",
+      "name": "Tea",
+      "vatPercent": 11,
+      "icon": "tea",
+      "displayColor": "#78A37D"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 10.49,
+      "currency": "RON"
+    },
     "size": "Medium",
     "allergens": [],
     "isAvailable": true,
-    "isHot": true
+    "isHot": true,
+    "ingredients": [
+      "Japanese Sencha Green Tea",
+      "Hot Water"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "tea-004",
     "sku": "TEA-CHAM-S",
     "displayName": "Chamomile Tea",
-    "category": { "id": "tea", "name": "Tea", "vatPercent": 11, "icon": "tea", "displayColor": "#78A37D" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 9.50, "currency": "RON" },
+    "category": {
+      "id": "tea",
+      "name": "Tea",
+      "vatPercent": 11,
+      "icon": "tea",
+      "displayColor": "#78A37D"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 9.5,
+      "currency": "RON"
+    },
     "size": "Small",
     "allergens": [],
     "isAvailable": true,
-    "isHot": true
+    "isHot": true,
+    "ingredients": [
+      "Dried Chamomile Blossoms",
+      "Honey",
+      "Hot Water"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "tea-005",
     "sku": "TEA-BERRY-L",
     "displayName": "Berry Iced Tea",
-    "category": { "id": "tea", "name": "Tea", "vatPercent": 11, "icon": "tea", "displayColor": "#78A37D" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 12.75, "currency": "RON" },
+    "category": {
+      "id": "tea",
+      "name": "Tea",
+      "vatPercent": 11,
+      "icon": "tea",
+      "displayColor": "#78A37D"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 12.75,
+      "currency": "RON"
+    },
     "size": "Large",
     "allergens": [],
     "isAvailable": true,
-    "isHot": false
+    "isHot": false,
+    "ingredients": [
+      "Black Tea",
+      "Mixed Berries",
+      "Mint",
+      "Ice"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "pas-001",
     "sku": "PAS-CRO-BUT",
     "displayName": "Butter Croissant",
-    "category": { "id": "pas", "name": "Pastries", "vatPercent": 11, "icon": "croissant", "displayColor": "#D8A46A" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 8.50, "currency": "RON" },
-    "allergens": ["Gluten", "Milk"],
+    "category": {
+      "id": "pas",
+      "name": "Pastries",
+      "vatPercent": 11,
+      "icon": "croissant",
+      "displayColor": "#D8A46A"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 8.5,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk"
+    ],
     "isAvailable": true,
-    "isFeatured": true
+    "isFeatured": true,
+    "ingredients": [
+      "Wheat Flour",
+      "Butter",
+      "Yeast",
+      "Milk",
+      "Sugar",
+      "Sea Salt"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "pas-002",
     "sku": "PAS-ROLL-PIST",
     "displayName": "Pistachio Roll",
-    "category": { "id": "pas", "name": "Pastries", "vatPercent": 11, "icon": "croissant", "displayColor": "#D8A46A" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 11.49, "currency": "RON" },
-    "allergens": ["Gluten", "Nuts", "Milk"],
-    "isAvailable": true
+    "category": {
+      "id": "pas",
+      "name": "Pastries",
+      "vatPercent": 11,
+      "icon": "croissant",
+      "displayColor": "#D8A46A"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 11.49,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Nuts",
+      "Milk"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Wheat Flour",
+      "Pistachio Cream",
+      "Butter",
+      "Crushed Pistachios",
+      "Milk"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "pas-003",
     "sku": "PAS-CRO-ALM",
     "displayName": "Almond Croissant",
-    "category": { "id": "pas", "name": "Pastries", "vatPercent": 11, "icon": "croissant", "displayColor": "#D8A46A" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 12.25, "currency": "RON" },
-    "allergens": ["Gluten", "Nuts", "Milk"],
-    "isAvailable": true
+    "category": {
+      "id": "pas",
+      "name": "Pastries",
+      "vatPercent": 11,
+      "icon": "croissant",
+      "displayColor": "#D8A46A"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 12.25,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Nuts",
+      "Milk"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Wheat Flour",
+      "Almond Frangipane",
+      "Butter",
+      "Flaked Almonds",
+      "Milk"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "pas-004",
     "sku": "PAS-MUF-CHO",
     "displayName": "Chocolate Muffin",
-    "category": { "id": "pas", "name": "Pastries", "vatPercent": 11, "icon": "croissant", "displayColor": "#D8A46A" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 10.75, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Eggs"],
-    "isAvailable": true
+    "category": {
+      "id": "pas",
+      "name": "Pastries",
+      "vatPercent": 11,
+      "icon": "croissant",
+      "displayColor": "#D8A46A"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 10.75,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Eggs"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Wheat Flour",
+      "Cocoa",
+      "Dark Chocolate Chips",
+      "Eggs",
+      "Butter",
+      "Milk"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "pas-005",
     "sku": "PAS-SCON-BLU",
     "displayName": "Blueberry Scone",
-    "category": { "id": "pas", "name": "Pastries", "vatPercent": 11, "icon": "croissant", "displayColor": "#D8A46A" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 9.49, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Eggs"],
-    "isAvailable": true
+    "category": {
+      "id": "pas",
+      "name": "Pastries",
+      "vatPercent": 11,
+      "icon": "croissant",
+      "displayColor": "#D8A46A"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 9.49,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Eggs"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Wheat Flour",
+      "Fresh Blueberries",
+      "Butter",
+      "Cream",
+      "Eggs",
+      "Sugar"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "pas-006",
     "sku": "PAS-ROLL-CIN",
     "displayName": "Cinnamon Roll",
-    "category": { "id": "pas", "name": "Pastries", "vatPercent": 11, "icon": "croissant", "displayColor": "#D8A46A" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 11.90, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Eggs"],
-    "isAvailable": false
+    "category": {
+      "id": "pas",
+      "name": "Pastries",
+      "vatPercent": 11,
+      "icon": "croissant",
+      "displayColor": "#D8A46A"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 11.9,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Eggs"
+    ],
+    "isAvailable": false,
+    "ingredients": [
+      "Wheat Flour",
+      "Ceylon Cinnamon",
+      "Brown Sugar",
+      "Butter",
+      "Cream Cheese Frosting"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "san-001",
     "sku": "SAN-PEST-CHK",
     "displayName": "Chicken Pesto Sandwich",
-    "category": { "id": "san", "name": "Sandwiches", "vatPercent": 11, "icon": "sandwich", "displayColor": "#C68C53" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 24.50, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Nuts"],
+    "category": {
+      "id": "san",
+      "name": "Sandwiches",
+      "vatPercent": 11,
+      "icon": "sandwich",
+      "displayColor": "#C68C53"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 24.5,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Nuts"
+    ],
     "isAvailable": true,
-    "isFeatured": true
+    "isFeatured": true,
+    "ingredients": [
+      "Sourdough Bread",
+      "Grilled Chicken Breast",
+      "Basil Pesto",
+      "Mozzarella",
+      "Pine Nuts",
+      "Arugula"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "san-002",
     "sku": "SAN-HAM-CHE",
     "displayName": "Ham and Cheese",
-    "category": { "id": "san", "name": "Sandwiches", "vatPercent": 11, "icon": "sandwich", "displayColor": "#C68C53" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 22.75, "currency": "RON" },
-    "allergens": ["Gluten", "Milk"],
-    "isAvailable": true
+    "category": {
+      "id": "san",
+      "name": "Sandwiches",
+      "vatPercent": 11,
+      "icon": "sandwich",
+      "displayColor": "#C68C53"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 22.75,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Baguette Bread",
+      "Smoked Ham",
+      "Emmental Cheese",
+      "Dijon Butter"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "san-003",
     "sku": "SAN-HUM-VGN",
     "displayName": "Vegan Hummus Wrap",
-    "category": { "id": "san", "name": "Sandwiches", "vatPercent": 11, "icon": "sandwich", "displayColor": "#C68C53" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 20.49, "currency": "RON" },
-    "allergens": ["Gluten", "Sesame"],
-    "isAvailable": true
+    "category": {
+      "id": "san",
+      "name": "Sandwiches",
+      "vatPercent": 11,
+      "icon": "sandwich",
+      "displayColor": "#C68C53"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 20.49,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Sesame"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Whole Wheat Tortilla Wrap",
+      "Chickpea Hummus",
+      "Roasted Red Peppers",
+      "Cucumber",
+      "Tahini Sesame Dressing"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "san-004",
     "sku": "SAN-CAPR-PAN",
     "displayName": "Caprese Panini",
-    "category": { "id": "san", "name": "Sandwiches", "vatPercent": 11, "icon": "sandwich", "displayColor": "#C68C53" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 23.25, "currency": "RON" },
-    "allergens": ["Gluten", "Milk"],
-    "isAvailable": true
+    "category": {
+      "id": "san",
+      "name": "Sandwiches",
+      "vatPercent": 11,
+      "icon": "sandwich",
+      "displayColor": "#C68C53"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 23.25,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Ciabatta Bread",
+      "Fresh Mozzarella",
+      "Ripe Tomatoes",
+      "Basil Leaves",
+      "Balsamic Glaze"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "san-005",
     "sku": "SAN-TUNA-TST",
     "displayName": "Tuna Toastie",
-    "category": { "id": "san", "name": "Sandwiches", "vatPercent": 11, "icon": "sandwich", "displayColor": "#C68C53" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 21.50, "currency": "RON" },
-    "allergens": ["Gluten", "Fish", "Milk"],
-    "isAvailable": true
+    "category": {
+      "id": "san",
+      "name": "Sandwiches",
+      "vatPercent": 11,
+      "icon": "sandwich",
+      "displayColor": "#C68C53"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 21.5,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Fish",
+      "Milk"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Toasted White Bread",
+      "Tuna Flakes",
+      "Cheddar Cheese",
+      "Mayonnaise",
+      "Celery",
+      "Pickles"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "cold-001",
     "sku": "COLD-ORA-M",
     "displayName": "Orange Juice",
-    "category": { "id": "cold", "name": "Cold Drinks", "vatPercent": 11, "icon": "snowflake", "displayColor": "#74B9FF" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 12.50, "currency": "RON" },
+    "category": {
+      "id": "cold",
+      "name": "Cold Drinks",
+      "vatPercent": 11,
+      "icon": "snowflake",
+      "displayColor": "#74B9FF"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 12.5,
+      "currency": "RON"
+    },
     "size": "Medium",
     "allergens": [],
     "isAvailable": true,
-    "isHot": false
+    "isHot": false,
+    "ingredients": [
+      "Freshly Squeezed Oranges"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "cold-002",
     "sku": "COLD-SPARK-L",
     "displayName": "Sparkling Water",
-    "category": { "id": "cold", "name": "Cold Drinks", "vatPercent": 11, "icon": "snowflake", "displayColor": "#74B9FF" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 8.25, "currency": "RON" },
+    "category": {
+      "id": "cold",
+      "name": "Cold Drinks",
+      "vatPercent": 11,
+      "icon": "snowflake",
+      "displayColor": "#74B9FF"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 8.25,
+      "currency": "RON"
+    },
     "size": "Large",
     "allergens": [],
     "isAvailable": true,
-    "isHot": false
+    "isHot": false,
+    "ingredients": [
+      "Carbonated Natural Mineral Water"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "cold-003",
     "sku": "COLD-BREW-L",
     "displayName": "Cold Brew",
-    "category": { "id": "cold", "name": "Cold Drinks", "vatPercent": 11, "icon": "snowflake", "displayColor": "#74B9FF" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 15.75, "currency": "RON" },
+    "category": {
+      "id": "cold",
+      "name": "Cold Drinks",
+      "vatPercent": 11,
+      "icon": "snowflake",
+      "displayColor": "#74B9FF"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 15.75,
+      "currency": "RON"
+    },
     "size": "Large",
     "allergens": [],
     "isAvailable": true,
-    "isHot": false
+    "isHot": false,
+    "ingredients": [
+      "Steeped Coarse Coffee Grounds",
+      "Cold Filtered Water",
+      "Ice"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "cold-004",
     "sku": "COLD-CHO-M",
     "displayName": "Iced Chocolate",
-    "category": { "id": "cold", "name": "Cold Drinks", "vatPercent": 11, "icon": "snowflake", "displayColor": "#74B9FF" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 17.49, "currency": "RON" },
+    "category": {
+      "id": "cold",
+      "name": "Cold Drinks",
+      "vatPercent": 11,
+      "icon": "snowflake",
+      "displayColor": "#74B9FF"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 17.49,
+      "currency": "RON"
+    },
     "size": "Medium",
-    "allergens": ["Milk"],
+    "allergens": [
+      "Milk"
+    ],
     "isAvailable": true,
-    "isHot": false
+    "isHot": false,
+    "ingredients": [
+      "Dutch Cocoa",
+      "Cold Milk",
+      "Chocolate Drizzle",
+      "Ice"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "cold-005",
     "sku": "COLD-MATCH-L",
     "displayName": "Iced Matcha Latte",
-    "category": { "id": "cold", "name": "Cold Drinks", "vatPercent": 11, "icon": "snowflake", "displayColor": "#74B9FF" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 18.50, "currency": "RON" },
+    "category": {
+      "id": "cold",
+      "name": "Cold Drinks",
+      "vatPercent": 11,
+      "icon": "snowflake",
+      "displayColor": "#74B9FF"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 18.5,
+      "currency": "RON"
+    },
     "size": "Large",
-    "allergens": ["Milk"],
+    "allergens": [
+      "Milk"
+    ],
     "isAvailable": true,
     "isHot": false,
-    "isFeatured": true
+    "isFeatured": true,
+    "ingredients": [
+      "Ceremonial Matcha",
+      "Milk",
+      "Vanilla Syrup",
+      "Ice"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "cold-006",
     "sku": "COLD-LEM-M",
     "displayName": "Lemonade",
-    "category": { "id": "cold", "name": "Cold Drinks", "vatPercent": 11, "icon": "snowflake", "displayColor": "#74B9FF" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 11.25, "currency": "RON" },
+    "category": {
+      "id": "cold",
+      "name": "Cold Drinks",
+      "vatPercent": 11,
+      "icon": "snowflake",
+      "displayColor": "#74B9FF"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 11.25,
+      "currency": "RON"
+    },
     "size": "Medium",
     "allergens": [],
     "isAvailable": true,
-    "isHot": false
+    "isHot": false,
+    "ingredients": [
+      "Fresh Lemon Juice",
+      "Cane Sugar",
+      "Purified Water",
+      "Mint Sprig",
+      "Ice"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "cold-007",
     "sku": "COLD-APPLE-M",
     "displayName": "Apple Juice",
-    "category": { "id": "cold", "name": "Cold Drinks", "vatPercent": 11, "icon": "snowflake", "displayColor": "#74B9FF" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 12.49, "currency": "RON" },
+    "category": {
+      "id": "cold",
+      "name": "Cold Drinks",
+      "vatPercent": 11,
+      "icon": "snowflake",
+      "displayColor": "#74B9FF"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 12.49,
+      "currency": "RON"
+    },
     "size": "Medium",
     "allergens": [],
     "isAvailable": false,
-    "isHot": false
+    "isHot": false,
+    "ingredients": [
+      "Cold Pressed Crisp Apples"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "combo-001",
     "sku": "COMBO-BREAKFAST",
     "displayName": "Breakfast Combo",
     "kind": "combo",
-    "category": { "id": "combo", "name": "Combos", "vatPercent": 11, "icon": "combo", "displayColor": "#B76E79" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 20.99, "currency": "RON" },
-    "allergens": ["Gluten", "Milk"],
+    "category": {
+      "id": "combo",
+      "name": "Combos",
+      "vatPercent": 11,
+      "icon": "combo",
+      "displayColor": "#B76E79"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 20.99,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk"
+    ],
     "isAvailable": true,
     "isFeatured": true,
     "availableFrom": "07:00",
@@ -348,38 +962,89 @@
         "sku": "PAS-CRO-BUT",
         "displayName": "Butter Croissant",
         "kind": "food",
-        "category": { "id": "pas", "name": "Pastries", "vatPercent": 11, "icon": "croissant", "displayColor": "#D8A46A" },
-        "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-        "price": { "amount": 8.50, "currency": "RON" },
-        "allergens": ["Gluten", "Milk"],
+        "category": {
+          "id": "pas",
+          "name": "Pastries",
+          "vatPercent": 11,
+          "icon": "croissant",
+          "displayColor": "#D8A46A"
+        },
+        "vat": {
+          "dineInPercent": 11,
+          "takeawayPercent": 11
+        },
+        "price": {
+          "amount": 8.5,
+          "currency": "RON"
+        },
+        "allergens": [
+          "Gluten",
+          "Milk"
+        ],
         "isAvailable": true,
-        "isFeatured": true
+        "isFeatured": true,
+        "origin": "SupplierBought"
       },
       {
         "id": "cof-001",
         "sku": "COF-LAT-L",
         "displayName": "Latte",
         "kind": "drink",
-        "category": { "id": "cof", "name": "Coffee", "vatPercent": 11, "icon": "coffee", "displayColor": "#6F4E37" },
-        "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-        "price": { "amount": 14.50, "currency": "RON" },
+        "category": {
+          "id": "cof",
+          "name": "Coffee",
+          "vatPercent": 11,
+          "icon": "coffee",
+          "displayColor": "#6F4E37"
+        },
+        "vat": {
+          "dineInPercent": 11,
+          "takeawayPercent": 21
+        },
+        "price": {
+          "amount": 14.5,
+          "currency": "RON"
+        },
         "size": "Large",
-        "allergens": ["Milk"],
+        "allergens": [
+          "Milk"
+        ],
         "isAvailable": true,
         "isHot": true,
-        "isFeatured": true
+        "isFeatured": true,
+        "origin": "MadeInHouse"
       }
-    ]
+    ],
+    "ingredients": [
+      "Butter Croissant",
+      "Latte"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "combo-002",
     "sku": "COMBO-LUNCH",
     "displayName": "Lunch Combo",
     "kind": "combo",
-    "category": { "id": "combo", "name": "Combos", "vatPercent": 11, "icon": "combo", "displayColor": "#B76E79" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 29.49, "currency": "RON" },
-    "allergens": ["Gluten", "Milk"],
+    "category": {
+      "id": "combo",
+      "name": "Combos",
+      "vatPercent": 11,
+      "icon": "combo",
+      "displayColor": "#B76E79"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 29.49,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk"
+    ],
     "isAvailable": true,
     "availableFrom": "11:00",
     "availableUntil": "15:00",
@@ -389,36 +1054,86 @@
         "sku": "SAN-HAM-CHE",
         "displayName": "Ham and Cheese",
         "kind": "food",
-        "category": { "id": "san", "name": "Sandwiches", "vatPercent": 11, "icon": "sandwich", "displayColor": "#C68C53" },
-        "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-        "price": { "amount": 22.75, "currency": "RON" },
-        "allergens": ["Gluten", "Milk"],
-        "isAvailable": true
+        "category": {
+          "id": "san",
+          "name": "Sandwiches",
+          "vatPercent": 11,
+          "icon": "sandwich",
+          "displayColor": "#C68C53"
+        },
+        "vat": {
+          "dineInPercent": 11,
+          "takeawayPercent": 11
+        },
+        "price": {
+          "amount": 22.75,
+          "currency": "RON"
+        },
+        "allergens": [
+          "Gluten",
+          "Milk"
+        ],
+        "isAvailable": true,
+        "origin": "MadeInHouse"
       },
       {
         "id": "cold-002",
         "sku": "COLD-SPARK-L",
         "displayName": "Sparkling Water",
         "kind": "drink",
-        "category": { "id": "cold", "name": "Cold Drinks", "vatPercent": 11, "icon": "snowflake", "displayColor": "#74B9FF" },
-        "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-        "price": { "amount": 8.25, "currency": "RON" },
+        "category": {
+          "id": "cold",
+          "name": "Cold Drinks",
+          "vatPercent": 11,
+          "icon": "snowflake",
+          "displayColor": "#74B9FF"
+        },
+        "vat": {
+          "dineInPercent": 11,
+          "takeawayPercent": 11
+        },
+        "price": {
+          "amount": 8.25,
+          "currency": "RON"
+        },
         "size": "Large",
         "allergens": [],
         "isAvailable": true,
-        "isHot": false
+        "isHot": false,
+        "origin": "MadeInHouse"
       }
-    ]
+    ],
+    "ingredients": [
+      "Ham and Cheese Sandwich",
+      "Cappuccino"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "combo-003",
     "sku": "COMBO-TEA-ALM",
     "displayName": "Tea and Almond Croissant",
     "kind": "combo",
-    "category": { "id": "combo", "name": "Combos", "vatPercent": 11, "icon": "combo", "displayColor": "#B76E79" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 19.75, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Nuts"],
+    "category": {
+      "id": "combo",
+      "name": "Combos",
+      "vatPercent": 11,
+      "icon": "combo",
+      "displayColor": "#B76E79"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 19.75,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Nuts"
+    ],
     "isAvailable": true,
     "parts": [
       {
@@ -426,290 +1141,859 @@
         "sku": "TEA-MINT-M",
         "displayName": "Mint Tea",
         "kind": "drink",
-        "category": { "id": "tea", "name": "Tea", "vatPercent": 11, "icon": "tea", "displayColor": "#78A37D" },
-        "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-        "price": { "amount": 10.50, "currency": "RON" },
+        "category": {
+          "id": "tea",
+          "name": "Tea",
+          "vatPercent": 11,
+          "icon": "tea",
+          "displayColor": "#78A37D"
+        },
+        "vat": {
+          "dineInPercent": 11,
+          "takeawayPercent": 21
+        },
+        "price": {
+          "amount": 10.5,
+          "currency": "RON"
+        },
         "size": "Medium",
         "allergens": [],
         "isAvailable": true,
-        "isHot": true
+        "isHot": true,
+        "origin": "MadeInHouse"
       },
       {
         "id": "pas-003",
         "sku": "PAS-CRO-ALM",
         "displayName": "Almond Croissant",
         "kind": "food",
-        "category": { "id": "pas", "name": "Pastries", "vatPercent": 11, "icon": "croissant", "displayColor": "#D8A46A" },
-        "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-        "price": { "amount": 12.25, "currency": "RON" },
-        "allergens": ["Gluten", "Nuts", "Milk"],
-        "isAvailable": true
+        "category": {
+          "id": "pas",
+          "name": "Pastries",
+          "vatPercent": 11,
+          "icon": "croissant",
+          "displayColor": "#D8A46A"
+        },
+        "vat": {
+          "dineInPercent": 11,
+          "takeawayPercent": 21
+        },
+        "price": {
+          "amount": 12.25,
+          "currency": "RON"
+        },
+        "allergens": [
+          "Gluten",
+          "Nuts",
+          "Milk"
+        ],
+        "isAvailable": true,
+        "origin": "SupplierBought"
       }
-    ]
+    ],
+    "ingredients": [
+      "English Breakfast Tea",
+      "Almond Croissant"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "juice-001",
     "sku": "JUICE-ORANGE",
     "displayName": "Fresh Orange Juice",
-    "category": { "id": "juice", "name": "Fresh Juices", "vatPercent": 11, "icon": "juice", "displayColor": "#FF9800" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 14.90, "currency": "RON" },
+    "category": {
+      "id": "juice",
+      "name": "Fresh Juices",
+      "vatPercent": 11,
+      "icon": "juice",
+      "displayColor": "#FF9800"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 14.9,
+      "currency": "RON"
+    },
     "size": "Medium",
     "allergens": [],
     "isAvailable": true,
     "isHot": false,
-    "isFeatured": true
+    "isFeatured": true,
+    "ingredients": [
+      "Valencia Oranges"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "juice-002",
     "sku": "JUICE-GREEN",
     "displayName": "Green Detox Juice",
-    "category": { "id": "juice", "name": "Fresh Juices", "vatPercent": 11, "icon": "juice", "displayColor": "#FF9800" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 16.50, "currency": "RON" },
+    "category": {
+      "id": "juice",
+      "name": "Fresh Juices",
+      "vatPercent": 11,
+      "icon": "juice",
+      "displayColor": "#FF9800"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 16.5,
+      "currency": "RON"
+    },
     "size": "Medium",
     "allergens": [],
     "isAvailable": true,
-    "isHot": false
+    "isHot": false,
+    "ingredients": [
+      "Spinach",
+      "Green Apple",
+      "Cucumber",
+      "Celery",
+      "Lime"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "juice-003",
     "sku": "JUICE-CARROT",
     "displayName": "Carrot Ginger Juice",
-    "category": { "id": "juice", "name": "Fresh Juices", "vatPercent": 11, "icon": "juice", "displayColor": "#FF9800" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 15.75, "currency": "RON" },
+    "category": {
+      "id": "juice",
+      "name": "Fresh Juices",
+      "vatPercent": 11,
+      "icon": "juice",
+      "displayColor": "#FF9800"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 15.75,
+      "currency": "RON"
+    },
     "size": "Medium",
     "allergens": [],
     "isAvailable": true,
-    "isHot": false
+    "isHot": false,
+    "ingredients": [
+      "Carrots",
+      "Fresh Ginger",
+      "Orange",
+      "Turmeric"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "juice-004",
     "sku": "JUICE-BERRY",
     "displayName": "Mixed Berry Juice",
-    "category": { "id": "juice", "name": "Fresh Juices", "vatPercent": 11, "icon": "juice", "displayColor": "#FF9800" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 17.25, "currency": "RON" },
+    "category": {
+      "id": "juice",
+      "name": "Fresh Juices",
+      "vatPercent": 11,
+      "icon": "juice",
+      "displayColor": "#FF9800"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 17.25,
+      "currency": "RON"
+    },
     "size": "Medium",
     "allergens": [],
     "isAvailable": true,
     "isHot": false,
-    "isFeatured": true
+    "isFeatured": true,
+    "ingredients": [
+      "Strawberries",
+      "Blueberries",
+      "Raspberries",
+      "Apple Juice Base"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "cake-001",
     "sku": "CAKE-CHEESE",
     "displayName": "Berry Cheesecake",
-    "category": { "id": "cake", "name": "Cakes & Desserts", "vatPercent": 11, "icon": "cake", "displayColor": "#C85A8E" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 16.50, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Eggs"],
+    "category": {
+      "id": "cake",
+      "name": "Cakes & Desserts",
+      "vatPercent": 11,
+      "icon": "cake",
+      "displayColor": "#C85A8E"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 16.5,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Eggs"
+    ],
     "isAvailable": true,
-    "isFeatured": true
+    "isFeatured": true,
+    "ingredients": [
+      "Graham Cracker Crust",
+      "Cream Cheese",
+      "Wild Berry Compote",
+      "Eggs",
+      "Vanilla Extract"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "cake-002",
     "sku": "CAKE-CARAMEL",
     "displayName": "Salted Caramel Tart",
-    "category": { "id": "cake", "name": "Cakes & Desserts", "vatPercent": 11, "icon": "cake", "displayColor": "#C85A8E" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 15.90, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Eggs"],
-    "isAvailable": true
+    "category": {
+      "id": "cake",
+      "name": "Cakes & Desserts",
+      "vatPercent": 11,
+      "icon": "cake",
+      "displayColor": "#C85A8E"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 15.9,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Eggs"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Pastry Crust",
+      "Salted Caramel Ganache",
+      "Dark Chocolate",
+      "Butter",
+      "Heavy Cream"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "cake-003",
     "sku": "CAKE-BROWNIE",
     "displayName": "Chocolate Brownie",
-    "category": { "id": "cake", "name": "Cakes & Desserts", "vatPercent": 11, "icon": "cake", "displayColor": "#C85A8E" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 12.50, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Eggs"],
-    "isAvailable": true
+    "category": {
+      "id": "cake",
+      "name": "Cakes & Desserts",
+      "vatPercent": 11,
+      "icon": "cake",
+      "displayColor": "#C85A8E"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 12.5,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Eggs"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Fudge Chocolate",
+      "Butter",
+      "Eggs",
+      "Sugar",
+      "Flour",
+      "Walnuts"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "cake-004",
     "sku": "CAKE-LEMON",
     "displayName": "Lemon Tart",
-    "category": { "id": "cake", "name": "Cakes & Desserts", "vatPercent": 11, "icon": "cake", "displayColor": "#C85A8E" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 13.75, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Eggs"],
+    "category": {
+      "id": "cake",
+      "name": "Cakes & Desserts",
+      "vatPercent": 11,
+      "icon": "cake",
+      "displayColor": "#C85A8E"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 13.75,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Eggs"
+    ],
     "isAvailable": true,
-    "isFeatured": true
+    "isFeatured": true,
+    "ingredients": [
+      "Sweet Shortcrust",
+      "Lemon Curd",
+      "Egg Whites",
+      "Sugar Meringue"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "snack-001",
     "sku": "SNACK-GRAN-BAR",
     "displayName": "Granola Bar",
-    "category": { "id": "snack", "name": "Snacks", "vatPercent": 11, "icon": "snack", "displayColor": "#B58B4C" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 7.50, "currency": "RON" },
-    "allergens": ["Gluten", "Nuts"],
-    "isAvailable": true
+    "category": {
+      "id": "snack",
+      "name": "Snacks",
+      "vatPercent": 11,
+      "icon": "snack",
+      "displayColor": "#B58B4C"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 7.5,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Nuts"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Rolled Oats",
+      "Honey",
+      "Almonds",
+      "Pumpkin Seeds",
+      "Cranberries"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "snack-002",
     "sku": "SNACK-OAT",
     "displayName": "Oat Cookie",
-    "category": { "id": "snack", "name": "Snacks", "vatPercent": 11, "icon": "snack", "displayColor": "#B58B4C" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 6.75, "currency": "RON" },
-    "allergens": ["Gluten"],
-    "isAvailable": true
+    "category": {
+      "id": "snack",
+      "name": "Snacks",
+      "vatPercent": 11,
+      "icon": "snack",
+      "displayColor": "#B58B4C"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 6.75,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Rolled Oats",
+      "Whole Wheat Flour",
+      "Brown Sugar",
+      "Cinnamon",
+      "Butter"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "snack-003",
     "sku": "SNACK-CHOC",
     "displayName": "Dark Chocolate Square",
-    "category": { "id": "snack", "name": "Snacks", "vatPercent": 11, "icon": "snack", "displayColor": "#B58B4C" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 8.25, "currency": "RON" },
-    "allergens": ["Milk", "Soy"],
-    "isAvailable": true
+    "category": {
+      "id": "snack",
+      "name": "Snacks",
+      "vatPercent": 11,
+      "icon": "snack",
+      "displayColor": "#B58B4C"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 8.25,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Milk",
+      "Soy"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "70% Cocoa Mass",
+      "Cocoa Butter",
+      "Cane Sugar",
+      "Soy Lecithin",
+      "Touch of Milk Powder"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "snack-004",
     "sku": "SNACK-FRUITS",
     "displayName": "Seasonal Fruit Cup",
-    "category": { "id": "snack", "name": "Snacks", "vatPercent": 11, "icon": "snack", "displayColor": "#B58B4C" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 9.50, "currency": "RON" },
+    "category": {
+      "id": "snack",
+      "name": "Snacks",
+      "vatPercent": 11,
+      "icon": "snack",
+      "displayColor": "#B58B4C"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 9.5,
+      "currency": "RON"
+    },
     "allergens": [],
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Fresh Strawberries",
+      "Melon",
+      "Grapes",
+      "Pineapple Chunks"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "breakfast-001",
     "sku": "BREAK-EGG-TOAST",
     "displayName": "Egg and Avocado Toast",
-    "category": { "id": "breakfast", "name": "Breakfast", "vatPercent": 11, "icon": "breakfast", "displayColor": "#A8C66C" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 22.90, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Eggs"],
-    "isAvailable": true
+    "category": {
+      "id": "breakfast",
+      "name": "Breakfast",
+      "vatPercent": 11,
+      "icon": "breakfast",
+      "displayColor": "#A8C66C"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 22.9,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Eggs"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Sourdough Toast Bread",
+      "Mashed Avocado",
+      "Poached Eggs",
+      "Feta Cheese",
+      "Chili Flakes"
+    ],
+    "origin": "MadeInHouse",
+    "availableFrom": "07:00",
+    "availableUntil": "11:00"
   },
   {
     "id": "breakfast-002",
     "sku": "BREAK-YOGURT",
     "displayName": "Yogurt Granola Bowl",
-    "category": { "id": "breakfast", "name": "Breakfast", "vatPercent": 11, "icon": "breakfast", "displayColor": "#A8C66C" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 18.50, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Nuts"],
+    "category": {
+      "id": "breakfast",
+      "name": "Breakfast",
+      "vatPercent": 11,
+      "icon": "breakfast",
+      "displayColor": "#A8C66C"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 18.5,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Nuts"
+    ],
     "isAvailable": true,
-    "isFeatured": true
+    "isFeatured": true,
+    "ingredients": [
+      "Greek Yogurt",
+      "Honey Granola",
+      "Mixed Berries",
+      "Chia Seeds",
+      "Toasted Walnuts"
+    ],
+    "origin": "MadeInHouse",
+    "availableFrom": "07:00",
+    "availableUntil": "11:00"
   },
   {
     "id": "breakfast-003",
     "sku": "BREAK-PANCAKE",
     "displayName": "Pancakes with Berries",
-    "category": { "id": "breakfast", "name": "Breakfast", "vatPercent": 11, "icon": "breakfast", "displayColor": "#A8C66C" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 21.75, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Eggs"],
-    "isAvailable": true
+    "category": {
+      "id": "breakfast",
+      "name": "Breakfast",
+      "vatPercent": 11,
+      "icon": "breakfast",
+      "displayColor": "#A8C66C"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 21.75,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Eggs"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Fluffy Buttermilk Pancakes",
+      "Maple Syrup",
+      "Butter",
+      "Fresh Berries",
+      "Eggs"
+    ],
+    "origin": "MadeInHouse",
+    "availableFrom": "07:00",
+    "availableUntil": "11:00"
   },
   {
     "id": "breakfast-004",
     "sku": "BREAK-BAGEL",
     "displayName": "Egg and Cheese Bagel",
-    "category": { "id": "breakfast", "name": "Breakfast", "vatPercent": 11, "icon": "breakfast", "displayColor": "#A8C66C" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 19.90, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Eggs"],
-    "isAvailable": true
+    "category": {
+      "id": "breakfast",
+      "name": "Breakfast",
+      "vatPercent": 11,
+      "icon": "breakfast",
+      "displayColor": "#A8C66C"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 19.9,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Eggs"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Toasted Sesame Bagel Bread",
+      "Scrambled Eggs",
+      "Cheddar Cheese",
+      "Butter"
+    ],
+    "origin": "MadeInHouse",
+    "availableFrom": "07:00",
+    "availableUntil": "11:00"
   },
   {
     "id": "vegan-001",
     "sku": "VGN-VEGETABLE",
     "displayName": "Roasted Vegetable Bowl",
-    "category": { "id": "vegan", "name": "Vegan", "vatPercent": 11, "icon": "leaf", "displayColor": "#66BB6A" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 24.50, "currency": "RON" },
+    "category": {
+      "id": "vegan",
+      "name": "Vegan",
+      "vatPercent": 11,
+      "icon": "leaf",
+      "displayColor": "#66BB6A"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 24.5,
+      "currency": "RON"
+    },
     "allergens": [],
     "isAvailable": true,
-    "isFeatured": true
+    "isFeatured": true,
+    "ingredients": [
+      "Quinoa",
+      "Roasted Sweet Potato",
+      "Chickpeas",
+      "Kale",
+      "Tahini Lemon Dressing"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "vegan-002",
     "sku": "VGN-BURGER",
     "displayName": "Vegan Burger",
-    "category": { "id": "vegan", "name": "Vegan", "vatPercent": 11, "icon": "leaf", "displayColor": "#66BB6A" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 25.90, "currency": "RON" },
-    "allergens": ["Gluten", "Soy"],
+    "category": {
+      "id": "vegan",
+      "name": "Vegan",
+      "vatPercent": 11,
+      "icon": "leaf",
+      "displayColor": "#66BB6A"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 25.9,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Soy"
+    ],
     "isAvailable": true,
-    "isFeatured": true
+    "isFeatured": true,
+    "ingredients": [
+      "Brioche Bun Bread",
+      "Plant-Based Patty",
+      "Lettuce",
+      "Tomato",
+      "Vegan Aioli",
+      "Pickles"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "vegan-003",
     "sku": "VGN-SALAD",
     "displayName": "Quinoa and Avocado Salad",
-    "category": { "id": "vegan", "name": "Vegan", "vatPercent": 11, "icon": "leaf", "displayColor": "#66BB6A" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 21.25, "currency": "RON" },
-    "allergens": ["Sesame"],
-    "isAvailable": true
+    "category": {
+      "id": "vegan",
+      "name": "Vegan",
+      "vatPercent": 11,
+      "icon": "leaf",
+      "displayColor": "#66BB6A"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 21.25,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Sesame"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Tri-color Quinoa",
+      "Hass Avocado",
+      "Cherry Tomatoes",
+      "Cucumber",
+      "Toasted Sesame Seeds"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "vegan-004",
     "sku": "VGN-SMOOTHIE",
     "displayName": "Berry Smoothie",
-    "category": { "id": "vegan", "name": "Vegan", "vatPercent": 11, "icon": "leaf", "displayColor": "#66BB6A" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 15.75, "currency": "RON" },
+    "category": {
+      "id": "vegan",
+      "name": "Vegan",
+      "vatPercent": 11,
+      "icon": "leaf",
+      "displayColor": "#66BB6A"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 15.75,
+      "currency": "RON"
+    },
     "size": "Medium",
     "allergens": [],
     "isAvailable": true,
-    "isHot": false
+    "isHot": false,
+    "ingredients": [
+      "Mixed Berries",
+      "Banana",
+      "Almond Milk Base",
+      "Chia Seeds"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "season-001",
     "sku": "SEASON-PUMPKIN",
     "displayName": "Pumpkin Spice Latte",
-    "category": { "id": "season", "name": "Seasonal Specials", "vatPercent": 11, "icon": "star", "displayColor": "#F4A261" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 18.90, "currency": "RON" },
+    "category": {
+      "id": "season",
+      "name": "Seasonal Specials",
+      "vatPercent": 11,
+      "icon": "star",
+      "displayColor": "#F4A261"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 18.9,
+      "currency": "RON"
+    },
     "size": "Large",
-    "allergens": ["Milk"],
+    "allergens": [
+      "Milk"
+    ],
     "isAvailable": true,
     "isHot": true,
-    "isFeatured": true
+    "isFeatured": true,
+    "ingredients": [
+      "Espresso",
+      "Pumpkin Spice Sauce",
+      "Steamed Milk",
+      "Whipped Cream",
+      "Pumpkin Pie Spice"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "season-002",
     "sku": "SEASON-GINGER",
     "displayName": "Gingerbread Cookie",
-    "category": { "id": "season", "name": "Seasonal Specials", "vatPercent": 11, "icon": "star", "displayColor": "#F4A261" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 8.90, "currency": "RON" },
-    "allergens": ["Gluten", "Milk", "Eggs"],
-    "isAvailable": true
+    "category": {
+      "id": "season",
+      "name": "Seasonal Specials",
+      "vatPercent": 11,
+      "icon": "star",
+      "displayColor": "#F4A261"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 8.9,
+      "currency": "RON"
+    },
+    "allergens": [
+      "Gluten",
+      "Milk",
+      "Eggs"
+    ],
+    "isAvailable": true,
+    "ingredients": [
+      "Wheat Flour",
+      "Molasses",
+      "Ground Ginger",
+      "Cinnamon",
+      "Butter",
+      "Royal Icing"
+    ],
+    "origin": "SupplierBought"
   },
   {
     "id": "season-003",
     "sku": "SEASON-PUNCH",
     "displayName": "Winter Fruit Punch",
-    "category": { "id": "season", "name": "Seasonal Specials", "vatPercent": 11, "icon": "star", "displayColor": "#F4A261" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 11 },
-    "price": { "amount": 13.50, "currency": "RON" },
+    "category": {
+      "id": "season",
+      "name": "Seasonal Specials",
+      "vatPercent": 11,
+      "icon": "star",
+      "displayColor": "#F4A261"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 11
+    },
+    "price": {
+      "amount": 13.5,
+      "currency": "RON"
+    },
     "size": "Medium",
     "allergens": [],
     "isAvailable": true,
-    "isHot": false
+    "isHot": false,
+    "ingredients": [
+      "Spiced Apple Cider",
+      "Orange Slices",
+      "Cinnamon Stick",
+      "Cloves",
+      "Star Anise"
+    ],
+    "origin": "MadeInHouse"
   },
   {
     "id": "season-004",
     "sku": "SEASON-CARAMEL",
     "displayName": "Caramel Hot Chocolate",
-    "category": { "id": "season", "name": "Seasonal Specials", "vatPercent": 11, "icon": "star", "displayColor": "#F4A261" },
-    "vat": { "dineInPercent": 11, "takeawayPercent": 21 },
-    "price": { "amount": 17.25, "currency": "RON" },
+    "category": {
+      "id": "season",
+      "name": "Seasonal Specials",
+      "vatPercent": 11,
+      "icon": "star",
+      "displayColor": "#F4A261"
+    },
+    "vat": {
+      "dineInPercent": 11,
+      "takeawayPercent": 21
+    },
+    "price": {
+      "amount": 17.25,
+      "currency": "RON"
+    },
     "size": "Medium",
-    "allergens": ["Milk"],
+    "allergens": [
+      "Milk"
+    ],
     "isAvailable": true,
     "isHot": true,
-    "isFeatured": true
+    "isFeatured": true,
+    "ingredients": [
+      "Steamed Milk",
+      "Rich Cocoa",
+      "Caramel Syrup",
+      "Sea Salt",
+      "Whipped Cream"
+    ],
+    "origin": "MadeInHouse"
   }
 ]

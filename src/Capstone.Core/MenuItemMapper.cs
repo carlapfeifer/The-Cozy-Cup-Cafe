@@ -31,6 +31,8 @@ public class MenuItemMapper : IItemMapper
         public List<MenuItemDto>? Parts { get; set; }
         public string? AvailableFrom { get; set; }
         public string? AvailableUntil { get; set; }
+        public List<string>? Ingredients { get; set; }
+        public string? Origin { get; set; }
     }
 
     private sealed class VatDto
@@ -137,6 +139,9 @@ public class MenuItemMapper : IItemMapper
         var isDecaf = dto.IsDecaf ?? false;
         var kind = dto.Kind?.Trim().ToLowerInvariant();
         var preparationTimeMinutes = dto.PreparationTimeMinutes ?? 5;
+        var origin = Enum.TryParse<ItemOrigin>(dto.Origin, ignoreCase: true, out var parsedOrigin)
+            ? parsedOrigin
+            : ItemOrigin.MadeInHouse;
 
         if (kind is not null and not "drink" and not "food" and not "combo")
             return null;
@@ -170,7 +175,9 @@ public class MenuItemMapper : IItemMapper
                 sku,
                 vat,
                 availableFrom,
-                availableUntil);
+                availableUntil,
+                dto.Ingredients,
+                origin);
         }
 
         if (kind == "drink" || (kind is null && dto.Size is not null))
@@ -197,7 +204,9 @@ public class MenuItemMapper : IItemMapper
                 vat,
                 isDecaf,
                 availableFrom,
-                availableUntil);
+                availableUntil,
+                dto.Ingredients,
+                origin);
         }
 
         if (dto.Size is not null)
@@ -215,7 +224,9 @@ public class MenuItemMapper : IItemMapper
             sku,
             vat,
             availableFrom,
-            availableUntil);
+            availableUntil,
+            dto.Ingredients,
+            origin);
     }
 
     private static MenuItemDto CreateDto(MenuItem item)
@@ -252,7 +263,9 @@ public class MenuItemMapper : IItemMapper
             IsFeatured = item.IsFeatured,
             PreparationTimeMinutes = item.PreparationTimeMinutes,
             AvailableFrom = item.AvailableFrom?.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture),
-            AvailableUntil = item.AvailableUntil?.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture)
+            AvailableUntil = item.AvailableUntil?.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture),
+            Ingredients = item.Ingredients.Count > 0 ? item.Ingredients.ToList() : null,
+            Origin = item.Origin.ToString()
         };
 
         switch (item)

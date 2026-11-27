@@ -16,9 +16,11 @@ public sealed class Combo : MenuItem
         string ? sku = null,
         VatInfo? vat = null,
         TimeOnly? availableFrom = null,
-        TimeOnly? availableUntil = null)
+        TimeOnly? availableUntil = null,
+        IEnumerable<string>? ingredients = null,
+        ItemOrigin origin = ItemOrigin.MadeInHouse)
         : this(id, displayName, category, price, CheckedParts(parts), isAvailable, isFeatured,
-            preparationTimeMinutes, sku, vat, availableFrom, availableUntil)
+            preparationTimeMinutes, sku, vat, availableFrom, availableUntil, ingredients, origin)
     {
     }
 
@@ -35,14 +37,18 @@ public sealed class Combo : MenuItem
         string ? sku = null,
         VatInfo? vat = null,
         TimeOnly? availableFrom = null,
-        TimeOnly? availableUntil = null)
+        TimeOnly? availableUntil = null,
+        IEnumerable<string>? ingredients = null,
+        ItemOrigin origin = ItemOrigin.MadeInHouse)
         : base(string.IsNullOrWhiteSpace(sku) && sku is not null
             ? throw new ArgumentException($"Sku '{sku}' is invalid.", nameof(sku))
             : sku ?? $"COMBO-{id}",
             id, displayName, category, price,
             parts.Aggregate(Allergen.None, (all, part) => all | part.Allergens),
             isAvailable && parts.All(part => part.IsAvailable),
-            isFeatured, preparationTimeMinutes, vat, availableFrom, availableUntil)
+            isFeatured, preparationTimeMinutes, vat, availableFrom, availableUntil,
+            ingredients ?? parts.SelectMany(p => p.Ingredients).Distinct(StringComparer.OrdinalIgnoreCase),
+            origin)
     {
         Parts = parts.AsReadOnly();
     }
@@ -71,9 +77,13 @@ public sealed class Combo : MenuItem
 
     public override MenuItem WithAvailability(bool isAvailable) =>
         new Combo(Id, DisplayName, Category, Price, Parts, isAvailable, IsFeatured, PreparationTimeMinutes, Sku, Vat,
-            AvailableFrom, AvailableUntil);
+            AvailableFrom, AvailableUntil, Ingredients, Origin);
 
     public override MenuItem WithPrice(Money price) =>
         new Combo(Id, DisplayName, Category, price, Parts, IsAvailable, IsFeatured, PreparationTimeMinutes, Sku, Vat,
-            AvailableFrom, AvailableUntil);
+            AvailableFrom, AvailableUntil, Ingredients, Origin);
+
+    public Combo WithParts(IEnumerable<MenuItem> parts) =>
+        new(Id, DisplayName, Category, Price, parts, IsAvailable, IsFeatured, PreparationTimeMinutes, Sku, Vat,
+            AvailableFrom, AvailableUntil, Ingredients, Origin);
 }

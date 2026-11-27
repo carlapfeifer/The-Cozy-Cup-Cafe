@@ -28,6 +28,14 @@
             <Setter Property="Foreground" Value="#3E2723" />
             <Setter Property="Background" Value="#FFFFFF" />
         </Style>
+        <Style Selector="Border.available">
+            <Setter Property="Background" Value="#F8EEE4" />
+        </Style>
+        <Style Selector="Border.soldOut">
+            <Setter Property="Background" Value="#FFEBEE" />
+            <Setter Property="BorderBrush" Value="#E57373" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
     </Window.Styles>
 
     <Grid RowDefinitions="Auto,*,Auto"
@@ -42,10 +50,15 @@
                 CornerRadius="10"
                 Background="#F3E2D3">
             <StackPanel Spacing="10">
-                <StackPanel Orientation="Horizontal" Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="14">
+                    <Image Source="avares://Capstone.Ui/Assets/logo.jpg"
+                           Height="50"
+                           Width="50"
+                           VerticalAlignment="Center" />
                     <TextBlock Text="The Cozy Cup Café"
                                FontSize="24"
-                               FontWeight="Bold" />
+                               FontWeight="Bold"
+                               VerticalAlignment="Center" />
                     <TextBlock Text="Staff dashboard"
                                VerticalAlignment="Center"
                                Opacity="0.75" />
@@ -120,6 +133,11 @@
             <StackPanel HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Spacing="18">
+                <Image Source="avares://Capstone.Ui/Assets/logo.jpg"
+                       Height="320"
+                       Width="320"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,12" />
                 <TextBlock Text="Welcome to The Cozy Cup Café"
                            FontSize="30"
                            FontWeight="Bold"
@@ -176,9 +194,18 @@
                                         <StackPanel Grid.Column="0" Spacing="2">
                                             <TextBlock Text="{Binding DisplayName}"
                                                        FontWeight="SemiBold" />
-                                            <TextBlock Text="{Binding CategoryName}"
-                                                       FontSize="12"
-                                                       Opacity="0.75" />
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <TextBlock Text="{Binding CategoryName}"
+                                                           FontSize="12"
+                                                           Opacity="0.75" />
+                                                <TextBlock Text="·" FontSize="12" Opacity="0.5" />
+                                                <TextBlock Text="{Binding OriginDisplay}"
+                                                           FontSize="12"
+                                                           Opacity="0.75" />
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding Sku, StringFormat='SKU: {0}'}"
+                                                       FontSize="11"
+                                                       Opacity="0.6" />
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Spacing="2">
                                             <TextBlock Text="Starting quantity" FontSize="11" />
@@ -214,15 +241,19 @@
               IsVisible="{Binding IsOrderPage}"
               RowDefinitions="Auto,Auto,*"
               RowSpacing="10">
-            <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
                 <TextBox Grid.Column="0"
-                         PlaceholderText="Search by item or category..."
+                         PlaceholderText="Search by item, category or origin..."
                          Text="{Binding Filter, Mode=TwoWay}" />
                 <ComboBox Grid.Column="1"
-                          Width="190"
+                          Width="150"
+                          ItemsSource="{Binding OriginFilters}"
+                          SelectedItem="{Binding OriginFilter, Mode=TwoWay}" />
+                <ComboBox Grid.Column="2"
+                          Width="170"
                           ItemsSource="{Binding Categories}"
                           SelectedItem="{Binding CategoryFilter, Mode=TwoWay}" />
-                <Button Grid.Column="2"
+                <Button Grid.Column="3"
                         Content="Delete selected"
                         Command="{Binding RemoveCommand}" />
             </Grid>
@@ -261,7 +292,8 @@
                                             <Border Padding="6"
                                                     Margin="2"
                                                     CornerRadius="6"
-                                                    Background="#F8EEE4">
+                                                    Classes.soldOut="{Binding !IsAvailable}"
+                                                    Classes.available="{Binding IsAvailable}">
                                                 <Grid ColumnDefinitions="*,Auto,Auto"
                                                       RowDefinitions="Auto"
                                                       ColumnSpacing="8">
@@ -270,9 +302,15 @@
                                                                 Spacing="2">
                                                         <TextBlock Text="{Binding DisplayName}"
                                                                    FontWeight="SemiBold" />
-                                                        <TextBlock Text="{Binding Allergens, StringFormat='Allergens: {0}'}"
-                                                                   FontSize="12"
-                                                                   Opacity="0.8" />
+                                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                                            <TextBlock Text="{Binding Allergens, StringFormat='Allergens: {0}'}"
+                                                                       FontSize="12"
+                                                                       Opacity="0.8" />
+                                                            <TextBlock Text="·" FontSize="12" Opacity="0.5" />
+                                                            <TextBlock Text="{Binding OriginDisplay}"
+                                                                       FontSize="12"
+                                                                       Opacity="0.8" />
+                                                        </StackPanel>
                                                     </StackPanel>
                                                     <StackPanel Grid.Row="0"
                                                                 Grid.Column="1"
@@ -296,8 +334,7 @@
                                                         <Button Content="Details"
                                                                 Click="SelectMenuItem_Click" />
                                                         <Button Content="Add"
-                                                                Click="AddMenuItem_Click"
-                                                                IsEnabled="{Binding IsAvailable}" />
+                                                                Click="AddMenuItem_Click" />
                                                     </StackPanel>
                                                 </Grid>
                                             </Border>
@@ -327,11 +364,18 @@
                         <TextBlock Text="{Binding Selected.DisplayName}"
                                    FontSize="21"
                                    FontWeight="Bold" />
-                        <TextBlock Text="{Binding DetailsCategory}"
-                                   FontSize="13"
-                                   Opacity="0.75" />
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="{Binding DetailsCategory}"
+                                       FontSize="13"
+                                       Opacity="0.75" />
+                            <TextBlock Text="·" FontSize="13" Opacity="0.5" />
+                            <TextBlock Text="{Binding DetailsOrigin}"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Opacity="0.75" />
+                        </StackPanel>
                     </StackPanel>
-                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="8">
                         <Border Grid.Row="0" Grid.Column="0" Padding="8" CornerRadius="6" Background="#F3E2D3">
                             <StackPanel Spacing="2">
                                 <TextBlock Text="PRICE" FontSize="10" FontWeight="Bold" />
@@ -346,11 +390,17 @@
                         </Border>
                         <Border Grid.Row="1" Grid.ColumnSpan="2" Padding="8" CornerRadius="6" Background="#F8EEE4">
                             <StackPanel Spacing="2">
+                                <TextBlock Text="INGREDIENTS" FontSize="10" FontWeight="Bold" />
+                                <TextBlock Text="{Binding DetailsIngredients}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Row="2" Grid.ColumnSpan="2" Padding="8" CornerRadius="6" Background="#F8EEE4">
+                            <StackPanel Spacing="2">
                                 <TextBlock Text="ALLERGENS" FontSize="10" FontWeight="Bold" />
                                 <TextBlock Text="{Binding DetailsAllergens}" TextWrapping="Wrap" />
                             </StackPanel>
                         </Border>
-                        <Border Grid.Row="2" Grid.ColumnSpan="2" Padding="8" CornerRadius="6" Background="#FFF1D6">
+                        <Border Grid.Row="3" Grid.ColumnSpan="2" Padding="8" CornerRadius="6" Background="#FFF1D6">
                             <StackPanel Spacing="2">
                                 <TextBlock Text="INVENTORY" FontSize="10" FontWeight="Bold" />
                                 <TextBlock Text="{Binding DetailsStockStatus}" FontWeight="SemiBold" />
@@ -363,6 +413,45 @@
                                    TextWrapping="Wrap"
                                    FontSize="12" />
                     </Expander>
+
+                    <!-- Item Customization Options (Milk, Syrup, Sugar, Bread) -->
+                    <Border IsVisible="{Binding CanCustomizeSelected}"
+                            Padding="8"
+                            CornerRadius="6"
+                            Background="#F0E5D8"
+                            BorderBrush="#D8BFA9"
+                            BorderThickness="1">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Item Customizations" FontWeight="Bold" FontSize="12" />
+                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                                <StackPanel Grid.Row="0" Grid.Column="0" Spacing="2" IsVisible="{Binding CanCustomizeMilk}">
+                                    <TextBlock Text="Milk" FontSize="11" />
+                                    <ComboBox ItemsSource="{Binding AvailableMilkOptions}"
+                                              SelectedItem="{Binding SelectedMilkOption, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="1" Spacing="2" IsVisible="{Binding CanCustomizeSyrup}">
+                                    <TextBlock Text="Syrup" FontSize="11" />
+                                    <ComboBox ItemsSource="{Binding AvailableSyrupOptions}"
+                                              SelectedItem="{Binding SelectedSyrupOption, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="0" Spacing="2" IsVisible="{Binding CanCustomizeSugar}">
+                                    <TextBlock Text="Sugar" FontSize="11" />
+                                    <ComboBox ItemsSource="{Binding AvailableSugarOptions}"
+                                              SelectedItem="{Binding SelectedSugarOption, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="1" Spacing="2" IsVisible="{Binding CanCustomizeBread}">
+                                    <TextBlock Text="Bread" FontSize="11" />
+                                    <ComboBox ItemsSource="{Binding AvailableBreadOptions}"
+                                              SelectedItem="{Binding SelectedBreadOption, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
                     <Button Content="Add selected item to order"
                             HorizontalAlignment="Left"
                             Command="{Binding AddToOrderCommand}"
@@ -422,9 +511,15 @@
                          SelectedItem="{Binding SelectedOrderLine, Mode=TwoWay}">
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="m:OrderLine">
-                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="4">
-                                <TextBlock Text="{Binding Quantity, StringFormat='{}{0}x'}" />
-                                <TextBlock Text="{Binding Item.DisplayName}" />
+                            <StackPanel Spacing="2" Margin="4">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="{Binding Quantity, StringFormat='{}{0}x'}" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding Item.DisplayName}" FontWeight="SemiBold" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding CustomizationSummary}"
+                                           FontSize="11"
+                                           Opacity="0.75"
+                                           IsVisible="{Binding CustomizationSummary.Length}" />
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

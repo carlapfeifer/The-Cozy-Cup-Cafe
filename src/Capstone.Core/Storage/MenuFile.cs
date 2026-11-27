@@ -48,6 +48,8 @@ public static class MenuFile
         public int? PreparationTimeMinutes { get; set; }
         public string? AvailableFrom { get; set; }
         public string? AvailableUntil { get; set; }
+        public List<string>? Ingredients { get; set; }
+        public string? Origin { get; set; }
         
         public decimal? CategoryVatPercent { get; set; }
         public string? CategoryIcon { get; set; }
@@ -189,6 +191,8 @@ public static async Task<IItemStore> LoadAsync(
             TakeawayVatPercent = menuItem.Vat.TakeawayPercent,
             AvailableFrom = menuItem.AvailableFrom?.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture),
             AvailableUntil = menuItem.AvailableUntil?.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture),
+            Ingredients = menuItem.Ingredients.Count > 0 ? menuItem.Ingredients.ToList() : null,
+            Origin = menuItem.Origin.ToString()
         };
 
         switch (menuItem)
@@ -241,6 +245,9 @@ public static async Task<IItemStore> LoadAsync(
         var featured = row.IsFeatured ?? false;
         var sku = row.Sku;
         var preparationTimeMinutes = row.PreparationTimeMinutes ?? 5;
+        var origin = Enum.TryParse<ItemOrigin>(row.Origin, ignoreCase: true, out var parsedOrigin)
+            ? parsedOrigin
+            : ItemOrigin.MadeInHouse;
         if (!TryParseAvailabilityWindow(row.AvailableFrom, row.AvailableUntil, out var availableFrom, out var availableUntil))
             throw new InvalidDataException("A row has an invalid availability window.");
 
@@ -268,7 +275,9 @@ public static async Task<IItemStore> LoadAsync(
                     vat,
                     row.IsDecaf ?? false,
                     availableFrom,
-                    availableUntil
+                    availableUntil,
+                    row.Ingredients,
+                    origin
                     );
 
             case "food":
@@ -283,7 +292,9 @@ public static async Task<IItemStore> LoadAsync(
                     preparationTimeMinutes,
                     sku,vat,
                     availableFrom,
-                    availableUntil);
+                    availableUntil,
+                    row.Ingredients,
+                    origin);
 
             case "combo":
                 if (row.Parts is not { Count: > 0 })
@@ -302,7 +313,9 @@ public static async Task<IItemStore> LoadAsync(
                     preparationTimeMinutes,
                     sku,vat,
                     availableFrom,
-                    availableUntil);
+                    availableUntil,
+                    row.Ingredients,
+                    origin);
 
             default:
                 throw new InvalidDataException($"'{row.Kind}' is not a kind of menu item.");

@@ -20,6 +20,9 @@ public abstract class MenuItem : IItem, IPriced
     public VatInfo Vat { get; }
     public TimeOnly? AvailableFrom { get; }
     public TimeOnly? AvailableUntil { get; }
+    public IReadOnlyList<string> Ingredients { get; }
+    public ItemOrigin Origin { get; }
+
     protected MenuItem(
         string sku,
         string id,
@@ -33,7 +36,9 @@ public abstract class MenuItem : IItem, IPriced
         int preparationTimeMinutes = 5,
         VatInfo? vat = null,
         TimeOnly? availableFrom = null,
-        TimeOnly? availableUntil = null
+        TimeOnly? availableUntil = null,
+        IEnumerable<string>? ingredients = null,
+        ItemOrigin origin = ItemOrigin.MadeInHouse
         )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
@@ -66,6 +71,10 @@ public abstract class MenuItem : IItem, IPriced
         Vat = vat ?? new VatInfo(11m, 11m);
         AvailableFrom = availableFrom;
         AvailableUntil = availableUntil;
+        Ingredients = ingredients is null
+            ? Array.Empty<string>()
+            : ingredients.Where(i => !string.IsNullOrWhiteSpace(i)).Select(i => i.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        Origin = origin;
     }
 
     /// <summary>
@@ -95,6 +104,9 @@ public abstract class MenuItem : IItem, IPriced
     public string AvailabilityWindow => AvailableFrom is null
         ? ""
         : $"{AvailableFrom:HH:mm}–{AvailableUntil:HH:mm}";
+
+    public string OriginDisplay => Origin == ItemOrigin.SupplierBought ? "Supplier Bought" : "Made in House";
+
     private static readonly TimeOnly HalfPriceFrom = new(18, 0);
 
     public decimal FinalPrice(TimeOnly time)
